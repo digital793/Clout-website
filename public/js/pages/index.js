@@ -25,6 +25,10 @@ window.addEventListener('load', function () {
        the visible part of each image tall on wide monitors. Keep in sync
        with .slider-main .splide__slide in /css/pages/index.css */
     height: 'max(500px, calc(400px + 12.5vw))',
+    /* The images are square, so slides are square too (width = height):
+       nothing gets cropped off the sides. perPage is ignored when
+       fixedWidth is set; as many slides show as fit. */
+    fixedWidth: 'max(500px, calc(400px + 12.5vw))',
     autoScroll: {
       speed: 1,
       pauseOnHover: true,
@@ -33,11 +37,13 @@ window.addEventListener('load', function () {
       992: {          // tablets
         perPage: 2,
         height: 'max(400px, calc(320px + 12.5vw))',
+        fixedWidth: 'max(400px, calc(320px + 12.5vw))',
         gap: '1rem',
       },
       576: {          // mobile
         perPage: 1,
         height: 'max(300px, calc(260px + 12.5vw))',
+        fixedWidth: 'min(100%, max(300px, calc(260px + 12.5vw)))',
         gap: '0.75rem',
       },
     },
