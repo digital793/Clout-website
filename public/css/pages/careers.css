@@ -1,3 +1,30 @@
 ﻿/* Webflow IX2 initial-state rules removed - using custom JS animations */
 .invisible { visibility: visible !important; opacity: 1 !important; }
 .home-logo-container, .image-238, .popup-tamplate { visibility: visible !important; }
+
+/* Careers hero: tighter spacing (was a full-screen box spreading title and tagline apart) */
+.careers_hero .crareers_hero_container {
+  height: auto;
+  justify-content: flex-start;
+  padding: 160px 20px 100px;
+}
+.careers_hero .crareers_hero_container::before,
+.careers_hero .crareers_hero_container::after {
+  display: none;
+}
+.careers_hero .heading-52 {
+  margin-bottom: 56px;
+}
+@media (max-width: 991px) {
+  .careers_hero .crareers_hero_container {
+    padding: 140px 20px 80px;
+  }
+}
+@media (max-width: 767px) {
+  .careers_hero .crareers_hero_container {
+    padding: 120px 20px 60px;
+  }
+  .careers_hero .heading-52 {
+    margin-bottom: 40px;
+  }
+}
