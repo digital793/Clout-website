@@ -39,3 +39,14 @@
     row-gap: 2rem;
   }
 }
+
+/* ---- Single-column layout (tablet + phone): no sticky text ----
+   On desktop the text column is sticky beside the images on purpose.
+   Below 992px the layout is one column (text above images), so a sticky
+   text column would freeze on screen while the images scroll over it. */
+@media screen and (max-width: 991px) {
+  .section-large-2.services .column-small.sticky {
+    position: relative;
+    top: auto;
+  }
+}
