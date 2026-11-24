@@ -4,10 +4,20 @@
   currentPath,
   wfPage: '6a0e8d3639b75dd2ea8da405',
   bodyClass: 'body-11',
-  extraHead: "<link href=\"/css/pages/our-works.css\" rel=\"stylesheet\" type=\"text/css\">\n<link href=\"/css/pages/portfolio-hover-videos.css\" rel=\"stylesheet\" type=\"text/css\">"
+  extraHead: "<link href=\"/css/pages/our-works.css?v=2\" rel=\"stylesheet\" type=\"text/css\">\n<link href=\"/css/components/works-spiral.css?v=1\" rel=\"stylesheet\" type=\"text/css\">\n<link href=\"/css/pages/portfolio-hover-videos.css\" rel=\"stylesheet\" type=\"text/css\">"
 }) %>
 
 <%- include('partials/navbar') %>
+
+<section id="works-spiral" role="region" aria-label="Our works" tabindex="0">
+  <canvas id="ws-bg" aria-hidden="true"></canvas>
+  <div class="ws-vignette" aria-hidden="true"></div>
+  <canvas id="ws-gl" aria-hidden="true"></canvas>
+  <div class="ws-scrim" aria-hidden="true"></div>
+  <div class="ws-copy"><h1 class="ws-title"><span>Made Visible,</span><span>Together</span></h1></div>
+  <div class="ws-label-pos" id="ws-labelPos"><div class="ws-label" id="ws-label"></div></div>
+  <div class="ws-sr-only"><ul id="ws-srList"></ul></div>
+</section>
 
 <section class="our_work_brand_card_wraper">
     <div class="w-layout-blockcontainer container-37 w-container">
@@ -85,5 +95,5 @@
   </section>
 
 <%- include('partials/footer', {
-  extraScripts: "<script src=\"/js/components/portfolio-hover-videos.js\"></script>\n<script src=\"/js/pages/our-works.js\"></script>"
+  extraScripts: "<script src=\"/js/vendor/three-r128.min.js?v=1\"></script>\n<script src=\"/js/components/works-spiral.js?v=1\"></script>\n<script src=\"/js/components/portfolio-hover-videos.js\"></script>\n<script src=\"/js/pages/our-works.js\"></script>"
 }) %>

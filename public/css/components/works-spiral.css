@@ -1,0 +1,43 @@
+/* Our Works hero: spiral 3D slider (three.js) over a neon mesh background.
+   Everything is scoped to #works-spiral so it can't clash with site styles. */
+#works-spiral{--ws-bg:#000;--ws-pill-bg:#ffd60a;--ws-pill-fg:#000;
+  position:relative;width:100%;height:clamp(600px,88svh,900px);min-height:720px;overflow:hidden;background:var(--ws-bg);color:#f4f4f2;
+  touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;cursor:grab}
+#works-spiral *{box-sizing:border-box}
+#works-spiral:focus{outline:none}
+#works-spiral:focus-visible{outline:2px solid currentColor;outline-offset:-4px}
+#works-spiral[data-dragging="true"]{cursor:grabbing}
+#works-spiral canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#works-spiral #ws-gl{opacity:0;transition:opacity 1.1s cubic-bezier(.22,1,.36,1)}
+#works-spiral.ready #ws-gl{opacity:1}
+#works-spiral #ws-bg{pointer-events:none}
+#works-spiral .ws-vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 50%,rgba(0,0,0,0) 30%,rgba(0,0,0,.8) 100%)}
+
+/* project-name pop-up (positioned every frame by JS) */
+#works-spiral .ws-label-pos{position:absolute;left:0;top:0;pointer-events:none;will-change:transform;z-index:3}
+#works-spiral .ws-label{display:inline-block;transform:translate(-50%,-100%) translateY(16px) scale(.82);transform-origin:50% 100%;opacity:0;
+  padding:10px 18px;border-radius:999px;background:var(--ws-pill-bg);color:var(--ws-pill-fg);white-space:nowrap;
+  font-family:Lufga,Arial,sans-serif;font-size:clamp(12px,1.05vw,15px);font-weight:600;line-height:1;letter-spacing:-.01em;text-transform:none;
+  box-shadow:0 12px 32px -10px rgba(255,214,10,.35);
+  transition:transform .55s cubic-bezier(.34,1.56,.64,1),opacity .25s ease}
+#works-spiral .ws-label.show{opacity:1;transform:translate(-50%,-100%) translateY(0) scale(1)}
+#works-spiral[data-dragging="true"] .ws-label{opacity:0}
+
+#works-spiral .ws-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#works-spiral .ws-fallback{position:absolute;inset:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:96px 16px 16px;overflow:auto;margin:0}
+#works-spiral .ws-fallback figure{margin:0}
+#works-spiral .ws-fallback img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;display:block}
+#works-spiral .ws-fallback figcaption{font-size:13px;margin-top:6px}
+
+/* hero title, bottom-left */
+#works-spiral .ws-copy{position:absolute;left:clamp(20px,4vw,56px);bottom:clamp(28px,4.5vw,64px);right:20px;margin:0;pointer-events:none;z-index:2}
+#works-spiral .ws-title{margin:0;color:#fff;font-family:Lufga,Arial,sans-serif;
+  font-weight:500;font-size:clamp(38px,9vw,80px);line-height:1.02;letter-spacing:-.025em;text-transform:none;text-align:left;
+  text-shadow:0 2px 28px rgba(0,0,0,.5);animation:ws-hero-in 1s .25s cubic-bezier(.22,1,.36,1) both}
+#works-spiral .ws-title span{display:block}
+/* phones: dark fade at the bottom so the title always reads */
+#works-spiral .ws-scrim{display:none}
+@media (max-width:640px){#works-spiral .ws-scrim{display:block;position:absolute;left:0;right:0;bottom:0;height:min(48%,340px);pointer-events:none;z-index:1;
+  background:linear-gradient(to top,rgba(0,0,0,.94) 0%,rgba(0,0,0,.78) 38%,rgba(0,0,0,.35) 72%,rgba(0,0,0,0) 100%)}}
+@keyframes ws-hero-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#works-spiral canvas,#works-spiral .ws-label{transition:none}#works-spiral .ws-title{animation:none}}

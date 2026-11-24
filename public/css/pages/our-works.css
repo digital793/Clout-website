@@ -23,6 +23,12 @@
 
 .our_work_brand_card_wraper {
   overflow: hidden;
+  padding-top: 140px;
+}
+@media (max-width: 767px) {
+  .our_work_brand_card_wraper {
+    padding-top: 90px;
+  }
 }
 
 .Left_card_wrapper_ourwork,
