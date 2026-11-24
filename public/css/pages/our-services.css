@@ -16,3 +16,26 @@
   transition: width 0.2s ease-out;
 }
 
+
+/* ---- Top padding: clear the floating navbar on every screen size ----
+   (the Webflow default of 6rem equals the navbar height, so the heading
+   sat right against it) */
+.section-large-2.services-hero {
+  padding-top: 10rem;
+}
+@media screen and (max-width: 991px) {
+  .section-large-2.services-hero { padding-top: 9rem; }
+}
+@media screen and (max-width: 479px) {
+  .section-large-2.services-hero { padding-top: 8.5rem; }
+}
+
+/* ---- Phones: section title + text ABOVE the images ----
+   cloutgency.css sets .logo_component to flex-flow: wrap-reverse below
+   480px, which put the images first. Keep the normal order instead. */
+@media screen and (max-width: 479px) {
+  .section-large-2.services .logo_component {
+    flex-flow: wrap;
+    row-gap: 2rem;
+  }
+}
