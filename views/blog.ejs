@@ -1,0 +1,49 @@
+<%- include('partials/head', {
+  title,
+  meta,
+  currentPath,
+  wfPage: '6a561799a82f861c10be3ba7',
+  bodyClass: 'blogs-body',
+  extraHead: "<link href=\"/css/pages/blog.css\" rel=\"stylesheet\" type=\"text/css\">"
+}) %>
+
+<%- include('partials/navbar') %>
+
+<section class="blog-section">
+  <h3 class="heading-52 blogs">Blogs</h3>
+  <div class="w-layout-blockcontainer blog-list-container w-container">
+    <div class="w-layout-grid blog-list-wraper">
+      <% blogs.forEach(blog => {
+        const publishedDate = blog.publishedAt ? new Date(`${blog.publishedAt}T00:00:00`) : null;
+        const dateLabel = publishedDate && !Number.isNaN(publishedDate.getTime())
+          ? publishedDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase()
+          : '';
+      %>
+      <a href="/blogs/<%= encodeURIComponent(blog.slug) %>.html" class="blog-list-card w-inline-block">
+        <div class="card-content-wraper">
+          <img src="<%= blog.coverImage %>" loading="lazy" alt="<%= blog.title %>" class="card-image">
+          <div class="blc-tag-wraper">
+            <div class="blc-capsule-wrap">
+              <% (Array.isArray(blog.tags) ? blog.tags : []).forEach(tag => { %>
+              <div class="blc-tag"><div class="blc-capsule-text"><%= tag %></div></div>
+              <% }); %>
+            </div>
+            <div class="d-t_detail"><div class="d-t"><%= dateLabel %><%= dateLabel && blog.readTime ? ' • ' : '' %><%= blog.readTime || '' %></div></div>
+          </div>
+          <div><strong class="blog-list-card-heading"><%= blog.title %></strong></div>
+          <div class="blog-list-card-content"><%= blog.excerpt %></div>
+        </div>
+        <div class="card-cta">
+          <div class="text-block-114">Learn more </div>
+          <div class="div-block-253"><div class="text-block-115">→</div></div>
+        </div>
+      </a>
+      <% }); %>
+      <% if (blogs.length === 0) { %>
+      <p class="blog-empty-state">New articles are coming soon.</p>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer', { extraScripts: "" }) %>

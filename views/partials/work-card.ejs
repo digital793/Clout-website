@@ -1,0 +1,32 @@
+<%
+  const title = item.title || '';
+  const highlightText = item.highlightText || '';
+  const highlightIndex = title.indexOf(highlightText);
+  const tags = Array.isArray(item.tags) ? item.tags : [];
+  const cardClass = index % 2 === 0 ? 'left_card_wraper_ourwork' : 'right_card_wraper_ourwork';
+%>
+<a data-work-card="<%= item.id %>" cursor-text="<%= item.client || '' %>" href="<%= item.link || '#' %>" class="<%= cardClass %> w-inline-block">
+  <div filter-item="<%= item.category || '' %>" class="filter-card">
+    <div class="card_image_wraper">
+      <img src="<%= item.image %>" loading="lazy" alt="<%= item.client || item.title %>" class="image-205 sample">
+      <% if (item.videoUrl) { %>
+        <div class="thumbline_bg_vid w-background-video w-background-video-atom">
+          <video loop muted playsinline preload="none" data-object-fit="cover">
+            <source src="<%= item.videoUrl %>">
+          </video>
+        </div>
+      <% } %>
+    </div>
+    <div class="card_content_wraper">
+      <% if (tags.length) { %>
+        <div class="card_text_wraper">
+          <% tags.forEach(tag => { %>
+            <div class="text_wraper_card"><div class="text-block-70"><%= tag %></div></div>
+          <% }); %>
+        </div>
+      <% } %>
+      <h5 class="heading-53"><% if (highlightIndex >= 0 && highlightText) { %><%= title.slice(0, highlightIndex) %><span class="work-title-highlight"><%= highlightText %></span><%= title.slice(highlightIndex + highlightText.length) %><% } else { %><%= title %><% } %></h5>
+      <div class="text-block-103"><%= item.shortDesc || '' %></div>
+    </div>
+  </div>
+</a>

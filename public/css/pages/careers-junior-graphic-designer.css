@@ -1,0 +1,3 @@
+﻿/* Webflow IX2 initial-state rules removed - using custom JS animations */
+.invisible { visibility: visible !important; opacity: 1 !important; }
+.home-logo-container, .image-238, .popup-tamplate { visibility: visible !important; }

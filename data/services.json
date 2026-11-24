@@ -1,0 +1,70 @@
+[
+  {
+    "id": "srv_1",
+    "title": "Brand Strategy & Identity",
+    "slug": "brand-strategy",
+    "category": "Branding",
+    "badge": "CORE PILLAR",
+    "short_desc": "Complete brand architectures, distinctive visual systems, tone of voice, and guidelines built to capture attention.",
+    "features": [
+      "Brand Positioning",
+      "Visual Identity Systems",
+      "Naming & Verbal Identity",
+      "Brand Guidelines"
+    ],
+    "icon": "/images/group-c-logo.svg",
+    "display_order": 1,
+    "is_active": true
+  },
+  {
+    "id": "srv_2",
+    "title": "Performance Marketing",
+    "slug": "performance-marketing",
+    "category": "Growth",
+    "badge": "HIGH ROI",
+    "short_desc": "Data-driven paid media across Meta, Google, and TikTok that scales revenue without sacrificing brand equity.",
+    "features": [
+      "Paid Social Strategy",
+      "Creative Asset Testing",
+      "Funnel Optimization",
+      "CAC & ROAS Maximization"
+    ],
+    "icon": "/images/DRA_4.png",
+    "display_order": 2,
+    "is_active": true
+  },
+  {
+    "id": "srv_3",
+    "title": "Content & Viral Media",
+    "slug": "content-production",
+    "category": "Media",
+    "badge": "TRENDSETTER",
+    "short_desc": "High-octane short-form videos, 3D motion, and creator partnerships engineered for algorithmic reach and engagement.",
+    "features": [
+      "Short-Form Video (Reels/TikTok)",
+      "3D & Motion Graphics",
+      "Creator Collaborations",
+      "Product Shoots"
+    ],
+    "icon": "/images/Superchennai_2.png",
+    "display_order": 3,
+    "is_active": true
+  },
+  {
+    "id": "srv_4",
+    "title": "Web & Digital Experiences",
+    "slug": "web-development",
+    "category": "Engineering",
+    "badge": "IMMERSIVE",
+    "short_desc": "Cutting-edge interactive websites with cinematic animations, high-converting UX, and lightning-fast performance.",
+    "features": [
+      "Custom Webflow & Node.js Sites",
+      "Interactive 3D / GSAP",
+      "E-commerce Experiences",
+      "Full-Funnel Optimization"
+    ],
+    "icon": "/images/Naturals_4.png",
+    "display_order": 4,
+    "is_active": true
+  }
+]

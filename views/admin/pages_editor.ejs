@@ -1,0 +1,257 @@
+<%- include('layout', {
+  body: `
+  <style>
+    .page-tabs-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 14px;
+      overflow-x: auto;
+    }
+    .page-tab-btn {
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .page-tab-btn:hover {
+      border-color: var(--border-gold);
+      color: #fff;
+    }
+    .page-tab-btn.active {
+      background: var(--gold);
+      color: #000;
+      border-color: var(--gold);
+      box-shadow: 0 4px 16px var(--gold-glow);
+    }
+
+    .editor-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 28px;
+    }
+    @media (max-width: 900px) {
+      .editor-layout { grid-template-columns: 1fr; }
+    }
+
+    .section-nav {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: sticky;
+      top: 90px;
+      height: fit-content;
+    }
+    .section-nav-btn {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid transparent;
+      cursor: pointer;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .section-nav-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .section-nav-btn.active {
+      background: rgba(255, 215, 0, 0.1);
+      color: var(--gold);
+      border-color: rgba(255, 215, 0, 0.25);
+    }
+
+    .section-panel {
+      display: none;
+    }
+    .section-panel.active {
+      display: block;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .image-preview-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 6px;
+    }
+    .image-thumb-preview {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-gold);
+      background: #000;
+    }
+
+    .panel-header-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+  </style>
+
+  <!-- Page Selector Tabs -->
+  <div class="page-tabs-bar">
+    ${availablePages.map(p => `
+      <a href="/admin/pages/${p.slug}" class="page-tab-btn ${p.slug === pageSlug ? 'active' : ''}">
+        <span>${p.label}</span>
+      </a>
+    `).join('')}
+  </div>
+
+  <div class="editor-layout">
+    <!-- Left Section Navigation -->
+    <aside class="section-nav" id="sectionNav">
+      ${Object.keys(content || {}).map((secKey, idx) => `
+        <button type="button" class="section-nav-btn ${idx === 0 ? 'active' : ''}" data-target="${secKey}">
+          <span>✦ ${secKey.toUpperCase().replace(/_/g, ' ')}</span>
+          <span style="font-size:11px; opacity:0.6;">→</span>
+        </button>
+      `).join('')}
+    </aside>
+
+    <!-- Right Dynamic Section Forms -->
+    <div class="editor-content-area">
+      ${Object.entries(content || {}).map(([secKey, secData], idx) => `
+        <div class="glass-panel gold-accent section-panel ${idx === 0 ? 'active' : ''}" id="panel_${secKey}">
+          <form class="section-form" data-slug="${pageSlug}" data-section="${secKey}">
+            <div class="panel-header-actions">
+              <div>
+                <h2 style="font-size:18px; font-weight:800; color:#fff;">Configure Section: <span style="color:var(--gold);">${secKey.toUpperCase().replace(/_/g, ' ')}</span></h2>
+                <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">Real-time synchronized with template markup</p>
+              </div>
+              <button type="submit" class="btn-action-gold">Save Changes ✦</button>
+            </div>
+
+            <div class="form-fields">
+              ${Object.entries(secData).map(([fieldName, fieldVal]) => {
+                if (typeof fieldVal === 'object' && fieldVal !== null) {
+                  return `
+                    <div class="form-group">
+                      <label class="form-label">${fieldName} (JSON / List Configuration)</label>
+                      <textarea class="form-control" name="${fieldName}" rows="5">${JSON.stringify(fieldVal, null, 2)}</textarea>
+                    </div>
+                  `;
+                }
+
+                const isImageOrVideo = typeof fieldVal === 'string' && (fieldVal.includes('/images/') || fieldVal.includes('/videos/') || fieldVal.endsWith('.png') || fieldVal.endsWith('.jpg') || fieldVal.endsWith('.svg') || fieldVal.endsWith('.mp4'));
+                const isLongText = typeof fieldVal === 'string' && fieldVal.length > 80;
+
+                if (isLongText) {
+                  return `
+                    <div class="form-group">
+                      <label class="form-label">${fieldName.replace(/([A-Z])/g, ' $1')}</label>
+                      <textarea class="form-control" name="${fieldName}">${fieldVal}</textarea>
+                    </div>
+                  `;
+                }
+
+                return `
+                  <div class="form-group">
+                    <label class="form-label">${fieldName.replace(/([A-Z])/g, ' $1')}</label>
+                    <input type="text" class="form-control" name="${fieldName}" value="${fieldVal || ''}">
+                    ${isImageOrVideo && !fieldVal.includes('.mp4') ? `
+                      <div class="image-preview-group">
+                        <img src="${fieldVal}" class="image-thumb-preview" alt="Preview" onerror="this.style.display='none'">
+                        <span style="font-size:11px; color:var(--text-dim);">Live Asset Path</span>
+                      </div>
+                    ` : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            <div style="margin-top:20px; text-align:right;">
+              <button type="submit" class="btn-action-gold">Save Changes ✦</button>
+            </div>
+          </form>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+
+  <script>
+    // Tab switching between sections
+    document.querySelectorAll('.section-nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.section-nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.getAttribute('data-target');
+        const panel = document.getElementById('panel_' + target);
+        if (panel) panel.classList.add('active');
+      });
+    });
+
+    // Handle AJAX Save on Section Forms
+    document.querySelectorAll('.section-form').forEach(form => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const slug = form.getAttribute('data-slug');
+        const section = form.getAttribute('data-section');
+        const formData = new FormData(form);
+        const payload = {};
+
+        for (const [key, val] of formData.entries()) {
+          try {
+            // Check if user submitted JSON string
+            if (val.trim().startsWith('{') || val.trim().startsWith('[')) {
+              payload[key] = JSON.parse(val);
+            } else {
+              payload[key] = val;
+            }
+          } catch (err) {
+            payload[key] = val;
+          }
+        }
+
+        try {
+          const res = await fetch('/api/admin/pages/' + slug + '/' + section, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const result = await res.json();
+          if (result.success) {
+            showToast('Section [' + section + '] saved successfully!');
+          } else {
+            showToast(result.error || 'Failed to save section', true);
+          }
+        } catch (err) {
+          showToast('Network error saving section: ' + err.message, true);
+        }
+      });
+    });
+  </script>
+`}) %>

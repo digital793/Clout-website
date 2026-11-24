@@ -1,0 +1,245 @@
+<%- include('layout', {
+  body: `
+  <style>
+    .seo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    @media (max-width: 1024px) {
+      .seo-grid { grid-template-columns: 1fr; }
+    }
+
+    .preview-card {
+      background: #000;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-top: 14px;
+    }
+    .google-preview-title {
+      color: #8ab4f8;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.3;
+      cursor: pointer;
+    }
+    .google-preview-url {
+      color: #bdc1c6;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .google-preview-desc {
+      color: #9aa0a6;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-top: 6px;
+    }
+
+    .social-preview {
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 14px;
+      background: #111;
+    }
+    .social-preview-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      background: #000;
+      display: block;
+    }
+    .social-preview-content {
+      padding: 12px 16px;
+    }
+    .social-preview-domain {
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+    }
+    .social-preview-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin: 4px 0;
+    }
+    .social-preview-desc {
+      font-size: 12px;
+      color: #aaa;
+    }
+  </style>
+
+  <div class="seo-grid">
+    <!-- Left Column: Global & Analytics SEO -->
+    <div>
+      <div class="glass-panel gold-accent" style="margin-bottom:28px;">
+        <h2 style="font-size:18px; font-weight:800; color:#fff; margin-bottom:4px;">Global Site-wide SEO & Tracking</h2>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:20px;">Applies to the entire domain and serves as universal fallbacks</p>
+
+        <form id="globalSeoForm">
+          <div class="form-group">
+            <label class="form-label">Brand / Site Name</label>
+            <input type="text" class="form-control" name="siteName" value="${seo.siteName || 'Cloutgency'}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Default Meta Title</label>
+            <input type="text" class="form-control" name="defaultTitle" value="${seo.defaultTitle || ''}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Default Meta Description</label>
+            <textarea class="form-control" name="defaultDescription" rows="3">${seo.defaultDescription || ''}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Default Social OG Image URL</label>
+            <input type="text" class="form-control" name="defaultOgImage" value="${seo.defaultOgImage || '/images/og-image.jpg'}">
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label class="form-label">Google Analytics 4 ID</label>
+              <input type="text" class="form-control" name="gaId" value="${seo.gaId || 'G-9P586QVTT9'}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Google Tag Manager ID</label>
+              <input type="text" class="form-control" name="gtmId" value="${seo.gtmId || ''}">
+            </div>
+          </div>
+
+          <div style="text-align:right; margin-top:16px;">
+            <button type="submit" class="btn-action-gold">Save Global SEO ✦</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Column: Page-wise SEO Editor with Live Preview -->
+    <div>
+      <div class="glass-panel">
+        <h2 style="font-size:18px; font-weight:800; color:#fff; margin-bottom:4px;">Page-Specific Meta & Canonical</h2>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:20px;">Override SEO title, description, and keywords per individual URL</p>
+
+        <div class="form-group">
+          <label class="form-label">Select Page to Optimize</label>
+          <select class="form-control" id="pageSeoSelector" style="background:#16151a;">
+            ${Object.keys(seo.pages || {}).map(path => `
+              <option value="${path}">${path === '/' ? 'Home Page (/)' : path}</option>
+            `).join('')}
+          </select>
+        </div>
+
+        <form id="pageSeoForm">
+          <input type="hidden" id="pagePathHidden" name="pagePath" value="/">
+
+          <div class="form-group">
+            <label class="form-label">Page Title Tag</label>
+            <input type="text" class="form-control" id="pTitle" name="title" value="${(seo.pages && seo.pages['/']?.title) || ''}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Meta Description</label>
+            <textarea class="form-control" id="pDesc" name="description" rows="3">${(seo.pages && seo.pages['/']?.description) || ''}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Canonical URL</label>
+            <input type="text" class="form-control" id="pCanonical" name="canonical" value="${(seo.pages && seo.pages['/']?.canonical) || 'https://cloutgency.com/'}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Focus SEO Keywords</label>
+            <input type="text" class="form-control" id="pKeywords" name="keywords" value="${(seo.pages && seo.pages['/']?.keywords) || ''}">
+          </div>
+
+          <div style="text-align:right; margin-top:16px;">
+            <button type="submit" class="btn-action-gold">Save Page SEO ✦</button>
+          </div>
+        </form>
+
+        <!-- Live Google Search Simulator -->
+        <div style="margin-top:28px;">
+          <label class="form-label">Google Search Result Preview</label>
+          <div class="preview-card">
+            <div class="google-preview-url" id="prevUrl">https://cloutgency.com/</div>
+            <div class="google-preview-title" id="prevTitle">${(seo.pages && seo.pages['/']?.title) || ''}</div>
+            <div class="google-preview-desc" id="prevDesc">${(seo.pages && seo.pages['/']?.description) || ''}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const pagesSeoData = ${JSON.stringify(seo.pages || {})};
+
+    // Live update Google preview
+    const titleInput = document.getElementById('pTitle');
+    const descInput = document.getElementById('pDesc');
+    const prevTitle = document.getElementById('prevTitle');
+    const prevDesc = document.getElementById('prevDesc');
+    const prevUrl = document.getElementById('prevUrl');
+    const pageSelector = document.getElementById('pageSeoSelector');
+    const pagePathHidden = document.getElementById('pagePathHidden');
+
+    titleInput.addEventListener('input', () => { prevTitle.textContent = titleInput.value || 'Untitled'; });
+    descInput.addEventListener('input', () => { prevDesc.textContent = descInput.value || 'No description set.'; });
+
+    // Handle Page Select change
+    pageSelector.addEventListener('change', () => {
+      const selected = pageSelector.value;
+      pagePathHidden.value = selected;
+      const data = pagesSeoData[selected] || {};
+      titleInput.value = data.title || '';
+      descInput.value = data.description || '';
+      document.getElementById('pCanonical').value = data.canonical || ('https://cloutgency.com' + selected);
+      document.getElementById('pKeywords').value = data.keywords || '';
+
+      prevTitle.textContent = data.title || 'Untitled';
+      prevDesc.textContent = data.description || 'No description set.';
+      prevUrl.textContent = 'https://cloutgency.com' + (selected === '/' ? '' : selected);
+    });
+
+    // Save Global SEO
+    document.getElementById('globalSeoForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = Object.fromEntries(new FormData(e.target).entries());
+      try {
+        const res = await fetch('/api/admin/seo/global', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const r = await res.json();
+        if (r.success) showToast('Global SEO updated successfully!');
+        else showToast(r.error, true);
+      } catch (err) {
+        showToast('Error saving Global SEO: ' + err.message, true);
+      }
+    });
+
+    // Save Page-wise SEO
+    document.getElementById('pageSeoForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = Object.fromEntries(new FormData(e.target).entries());
+      try {
+        const res = await fetch('/api/admin/seo/page', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const r = await res.json();
+        if (r.success) {
+          pagesSeoData[payload.pagePath] = { ...(pagesSeoData[payload.pagePath] || {}), ...payload };
+          showToast('SEO for [' + payload.pagePath + '] saved successfully!');
+        } else {
+          showToast(r.error, true);
+        }
+      } catch (err) {
+        showToast('Error saving Page SEO: ' + err.message, true);
+      }
+    });
+  </script>
+`}) %>

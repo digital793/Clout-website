@@ -1,0 +1,1502 @@
+<%- include('layout', {
+  body: `
+  <style>
+    .collections-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+    }
+    .item-card:hover {
+      border-color: var(--border-gold);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .item-card-media {
+      height: 155px;
+      background: #0a090e;
+      position: relative;
+      overflow: hidden;
+    }
+    .item-card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .no-img {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .item-card-body {
+      padding: 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .item-badge {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 5px;
+    }
+    .item-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .item-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 14px;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .item-actions {
+      display: flex;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .upload-zone {
+      border: 2px dashed var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--gold);
+      background: rgba(255,215,0,0.04);
+    }
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .upload-zone-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+    .upload-zone-label span { color: var(--gold); }
+    .upload-preview {
+      margin-top: 10px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+    .upload-preview.has-image { display: flex; }
+    .upload-preview img { width: 52px; height: 52px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-gold); }
+    .upload-preview .file-name { font-size: 11px; color: var(--gold); font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .or-divider { display: flex; align-items: center; gap: 10px; margin: 10px 0; font-size: 10px; color: var(--text-dim); font-weight: 700; }
+    .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+    .upload-progress { height: 3px; background: var(--border-subtle); border-radius: 99px; margin-top: 8px; overflow: hidden; display: none; }
+    .upload-progress-bar { height: 100%; width: 0; background: var(--gold); border-radius: 99px; transition: width 0.3s ease; }
+    .upload-progress.active { display: block; }
+    .blog-editor-heading, .blog-editor-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .blog-editor-hint, .blog-editor-footer { color: var(--text-dim); font-size: 11px; }
+    .blog-editor-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px;
+      background: rgba(6, 5, 8, 0.8);
+      border: 1px solid var(--border-subtle);
+      border-bottom: 0;
+      border-radius: 8px 8px 0 0;
+    }
+    .blog-editor-toolbar button {
+      min-width: 34px;
+      padding: 7px 10px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 5px;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .blog-editor-toolbar button:hover, .blog-editor-toolbar button[aria-pressed="true"] {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .blog-editor-canvas {
+      min-height: 390px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding: 14px 16px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 0 0 8px 8px;
+      background: rgba(6, 5, 8, 0.8);
+      color: #eee;
+      font-size: 13px;
+      line-height: 1.75;
+      overflow-wrap: anywhere;
+      outline: none;
+    }
+    .blog-editor-canvas:focus {
+      border-color: var(--gold);
+    }
+    .blog-editor-canvas:empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+    .blog-editor-canvas h2, .blog-editor-canvas h3, .blog-editor-canvas h4,
+    .blog-editor-preview h2, .blog-editor-preview h3 { color: #fff; margin: 1.5em 0 0.5em; }
+    .blog-editor-canvas p, .blog-editor-preview p { margin: 0 0 1em; }
+    .blog-editor-canvas blockquote, .blog-editor-preview blockquote {
+      margin: 1em 0; padding-left: 14px; border-left: 3px solid var(--gold); color: var(--text-muted);
+    }
+    .blog-editor-canvas img, .blog-editor-preview img {
+      display: block; max-width: 100%; height: auto; margin: 12px 0; border-radius: 8px;
+    }
+    .blog-editor-canvas a, .blog-editor-preview a { color: var(--gold); }
+    .blog-editor-preview {
+      min-height: 390px;
+      padding: 18px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 0 0 8px 8px;
+      background: rgba(6, 5, 8, 0.8);
+      color: #eee;
+      line-height: 1.75;
+      overflow-wrap: anywhere;
+    }
+    .blog-editor-source {
+      display: none;
+    }
+    .blog-editor-footer { margin-top: 8px; }
+    .blog-editor-footer span:last-child { text-align: right; }
+    @media (max-width: 640px) {
+      .blog-editor-footer { align-items: flex-start; flex-direction: column; }
+      .blog-editor-footer span:last-child { text-align: left; }
+    }
+
+    /* ─── Full Display Studio for Blogs ───────────────────────────── */
+    .modal-backdrop.blog-fullscreen-backdrop {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      padding: 0 !important;
+      background: #09080d !important;
+      backdrop-filter: none !important;
+      align-items: stretch !important;
+      justify-content: stretch !important;
+      z-index: 99999 !important;
+    }
+    .modal-box.blog-fullscreen-modal {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      border-radius: 0 !important;
+      border: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      background: #0c0b11 !important;
+      box-shadow: none !important;
+      overflow: hidden !important;
+    }
+    .blog-studio-topbar {
+      height: 60px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: #111017;
+      border-bottom: 1px solid var(--border-subtle);
+      z-index: 10;
+      gap: 16px;
+    }
+    .blog-studio-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+    .btn-studio-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn-studio-back:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .blog-studio-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--border-subtle);
+    }
+    .blog-studio-heading-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .blog-studio-badge {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(255, 215, 0, 0.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      white-space: nowrap;
+    }
+    .blog-studio-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .blog-studio-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+    .blog-studio-stat-pill {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      white-space: nowrap;
+    }
+    .blog-studio-toggle-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      user-select: none;
+    }
+    .blog-studio-toggle-label input {
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+    .btn-studio-close {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 18px;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-studio-close:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .blog-studio-form {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+    }
+    .blog-studio-body {
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .blog-studio-main {
+      height: 100%;
+      overflow-y: auto;
+      padding: 32px 48px 60px;
+      background: #0c0b11;
+      display: flex;
+      flex-direction: column;
+    }
+    .blog-title-input {
+      width: 100%;
+      background: #111016;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.35;
+      padding: 14px 18px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      font-family: inherit;
+    }
+    .blog-title-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+    .blog-title-input::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+      font-weight: 700;
+    }
+    .blog-studio-main .blog-editor-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .blog-studio-main .blog-editor-toolbar {
+      padding: 10px 14px;
+      background: #15131c;
+      border-color: var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .blog-studio-main .blog-editor-canvas,
+    .blog-studio-main .blog-editor-preview {
+      flex: 1;
+      min-height: 480px;
+      background: #111016;
+      border-color: var(--border-subtle);
+      padding: 24px 28px;
+      font-size: 15px;
+      line-height: 1.85;
+    }
+    .blog-studio-sidebar {
+      height: 100%;
+      overflow-y: auto;
+      background: #111017;
+      border-left: 1px solid var(--border-subtle);
+      padding: 26px 24px 60px;
+    }
+    .blog-sidebar-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    @media (max-width: 1100px) {
+      .blog-studio-body { grid-template-columns: 1fr 320px; }
+      .blog-studio-main { padding: 24px 24px 40px; }
+      .blog-title-input { font-size: 20px; }
+    }
+    @media (max-width: 860px) {
+      .blog-studio-body {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .blog-studio-form {
+        height: auto;
+        overflow-y: auto;
+      }
+      .blog-studio-main, .blog-studio-sidebar {
+        height: auto;
+        overflow: visible;
+      }
+      .blog-studio-sidebar {
+        border-left: none;
+        border-top: 1px solid var(--border-subtle);
+      }
+    }
+  </style>
+
+  <div class="collections-header">
+    <div>
+      <h2 style="font-size:22px;font-weight:800;color:#fff;">${config.title}</h2>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:2px;">Manage ${collectionType} entries — changes reflect immediately on the live site</p>
+    </div>
+    <button type="button" class="btn-action-gold" id="btnOpenNewItem">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Add New Entry
+    </button>
+  </div>
+
+  ${items.length === 0 ? `<div class="glass-panel" style="text-align:center;padding:60px 24px;">
+    <div style="font-size:36px;margin-bottom:12px;opacity:0.25;">📂</div>
+    <p style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">No entries yet</p>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:20px;">Click below to add your first entry</p>
+    <button type="button" class="btn-action-gold" onclick="document.getElementById('btnOpenNewItem').click()">+ Add First Entry</button>
+  </div>` : `<div class="items-grid">
+    ${items.map(item => `<div class="item-card" id="card_${item.id}">
+      <div class="item-card-media" style="position:relative;overflow:hidden;background:#0d0c12;">
+        ${collectionType === 'team' ? `
+          <img src="${item.image || '/images/Flower.svg'}" alt="${item.name || item.title}" style="width:100%;height:100%;object-fit:cover;transition:opacity 0.3s ease;">
+          ${item.altImage ? `<img src="${item.altImage}" alt="Hover Flip" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 0.3s ease;" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0'">` : ''}
+          ${item.altImage ? `<span style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.8);color:#FFD700;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,215,0,0.35);pointer-events:none;">2 Images · Hover</span>` : ''}
+        ` : ((item.image || item.coverImage || item.photo) ? `<img src="${item.image || item.coverImage || item.photo}" alt="${item.title || item.name}" onerror="this.parentElement.innerHTML='<div class=no-img>No Image</div>'">` : '<div class="no-img">No Image</div>')}
+      </div>
+      <div class="item-card-body">
+        <div class="item-badge">${collectionType === 'team' ? ((item.department ? item.department.toUpperCase() + ' · ' : '') + (item.role || 'Member')) : (collectionType === 'works' ? (workCategories.find(category => category.value === item.category)?.label || item.category || 'Uncategorized') : (item.category || item.role || item.author || collectionType))}</div>
+        <h3 class="item-title">${item.name || item.title || 'Untitled'}</h3>
+        <p class="item-desc">${collectionType === 'team' ? `Flip: ${item.altName || item.name} · ${item.bio || item.role || '—'}` : (collectionType === 'works' ? `${item.client || ''}${item.highlightText ? ` · Highlight: ${item.highlightText}` : ''}${item.videoUrl ? ' · Hover video' : ''}${item.isActive === false ? ' · Hidden' : ''}` : (item.shortDesc || item.summary || item.excerpt || item.bio || '—'))}</p>
+        <div class="item-actions">
+          <button type="button" class="btn-edit-item" style="flex:1;" data-item="${JSON.stringify(item).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}" onclick="openEditModal(this.dataset.item)">Edit ✎</button>
+          <button type="button" class="btn-del-item" onclick="deleteItem('${collectionKey}',${item.id})">✕</button>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>`}
+
+  ${collectionType === 'blogs' ? `
+  <div class="modal-backdrop blog-fullscreen-backdrop" id="itemModal">
+    <div class="modal-box blog-fullscreen-modal">
+      <div class="blog-studio-topbar">
+        <div class="blog-studio-topbar-left">
+          <button type="button" class="btn-studio-back" onclick="closeModal()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <span>Back to Articles</span>
+          </button>
+          <div class="blog-studio-divider"></div>
+          <div class="blog-studio-heading-wrap">
+            <span class="blog-studio-badge">Blog Studio</span>
+            <h3 id="modalHeading" class="blog-studio-title">Add New Article</h3>
+          </div>
+        </div>
+        <div class="blog-studio-topbar-right">
+          <div class="blog-studio-stat-pill" id="blogTopbarStats">0 words · 1 min read</div>
+          <label class="blog-studio-toggle-label">
+            <input type="checkbox" id="itemIsPublished" checked>
+            <span>Publish Live</span>
+          </label>
+          <button type="button" class="btn-action-gold" onclick="document.getElementById('itemForm').requestSubmit()">
+            Save Article ✦
+          </button>
+          <button type="button" class="btn-studio-close" onclick="closeModal()" title="Close (Esc)">✕</button>
+        </div>
+      </div>
+      <form id="itemForm" class="blog-studio-form">
+        <input type="hidden" id="itemId">
+        <input type="hidden" id="itemImageUrl">
+        <input type="hidden" id="itemAltImageUrl">
+        
+        <div class="blog-studio-body">
+          <!-- Main Writing Area (Occupies full display left side) -->
+          <div class="blog-studio-main">
+            <div class="form-group" style="margin-bottom:16px;">
+              <label class="form-label" style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;font-weight:800;margin-bottom:6px;">Article Title *</label>
+              <input type="text" class="blog-title-input" id="itemTitle" required maxlength="200" placeholder="Enter article title...">
+            </div>
+            
+            <div class="form-group blog-editor-group" style="flex:1;display:flex;flex-direction:column;">
+              <div class="blog-editor-toolbar" role="toolbar" aria-label="Article formatting">
+                <button type="button" data-markdown="## Heading\\n" title="Add section heading">H2</button>
+                <button type="button" data-markdown="### Subheading\\n" title="Add subheading">H3</button>
+                <button type="button" data-markdown="**Bold text**" title="Add bold text"><strong>B</strong></button>
+                <button type="button" data-markdown="_Italic text_" title="Add italic text"><em>I</em></button>
+                <button type="button" data-markdown="- List item\\n" title="Add bullet list">List</button>
+                <button type="button" data-markdown="> Quote\\n" title="Add a quote">Quote</button>
+                <button type="button" id="btnInsertBlogImage" title="Upload and insert an article image">🖼 Image</button>
+                <div style="flex:1;"></div>
+                <button type="button" id="btnPreviewBlog" aria-pressed="false" style="font-weight:700;">Preview</button>
+              </div>
+              <div class="blog-editor-canvas" id="blogRichEditor" contenteditable="true" role="textbox" aria-label="Article body" aria-multiline="true" data-placeholder="Write your article here. Use the toolbar above to format text and insert inline images..."></div>
+              <textarea class="blog-editor-source" id="itemContent" aria-hidden="true" tabindex="-1"></textarea>
+              <input type="file" id="blogInlineImageInput" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+              <div class="blog-editor-preview" id="blogEditorPreview" hidden></div>
+              <div class="blog-editor-footer">
+                <span id="blogWordCount">0 words · about 1 min read</span>
+                <span>Pro-tip: Images stay visible while editing and are saved with the article.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Publishing & SEO Inspector Sidebar -->
+          <div class="blog-studio-sidebar">
+            <div class="blog-sidebar-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Publishing Settings</span>
+            </div>
+
+            <!-- Cover Image -->
+            <div class="form-group">
+              <label class="form-label">Cover image *</label>
+              <div class="upload-zone" id="uploadZone" style="padding:14px 10px;">
+                <input type="file" id="imageFileInput" accept="image/jpeg,image/png,image/webp,image/gif" onchange="handleFileSelect(this)">
+                <div class="upload-zone-label">
+                  <div style="font-size:22px;opacity:0.4;margin-bottom:4px;">🖼</div>
+                  <span>Click or drag &amp; drop cover</span><br>
+                  <small style="color:var(--text-dim);font-size:10px;">JPG, PNG, WebP — stored in /images/blogs/</small>
+                </div>
+                <div class="upload-progress" id="uploadProgress"><div class="upload-progress-bar" id="uploadProgressBar"></div></div>
+              </div>
+              <div class="upload-preview" id="uploadPreview">
+                <img id="uploadPreviewImg" src="" alt="">
+                <span class="file-name" id="uploadFileName"></span>
+                <button type="button" onclick="clearUpload()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px;">✕</button>
+              </div>
+              <div class="or-divider">or paste URL directly</div>
+              <input type="text" class="form-control" id="itemImageUrlInput" placeholder="/images/uploads/my-image.png" style="font-size:11px;" oninput="document.getElementById('itemImageUrl').value=this.value;tryPreviewUrl(this.value)">
+            </div>
+
+            <!-- URL Slug -->
+            <div class="form-group">
+              <label class="form-label">Article URL slug *</label>
+              <input type="text" class="form-control" id="itemSlug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="your-article-url">
+              <small style="color:var(--text-dim);font-size:10px;">URL: /blog/<span id="slugPreviewText" style="color:var(--gold);font-weight:700;">your-article-url</span></small>
+            </div>
+
+            <!-- Excerpt -->
+            <div class="form-group">
+              <label class="form-label">Card excerpt / summary *</label>
+              <textarea class="form-control" id="itemExcerpt" rows="3" required maxlength="500" placeholder="Summary shown on the blog listing and preview cards..."></textarea>
+            </div>
+
+            <!-- Author -->
+            <div class="form-group">
+              <label class="form-label">Author</label>
+              <input type="text" class="form-control" id="itemAuthor" placeholder="Cloutgency">
+            </div>
+
+            <!-- Published Date & Read Time -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Published date *</label>
+                <input type="date" class="form-control" id="itemPublishedAt" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Read time</label>
+                <input type="text" class="form-control" id="itemReadTime" placeholder="2 min read">
+              </div>
+            </div>
+
+            <!-- Capsule Labels -->
+            <div class="form-group">
+              <label class="form-label">Capsule labels (one per line)</label>
+              <textarea class="form-control" id="itemTags" rows="2" placeholder="Marketing&#10;Branding"></textarea>
+            </div>
+
+            <!-- Sidebar Actions -->
+            <div style="display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border-subtle);">
+              <button type="button" class="btn-live-preview" style="flex:1;" onclick="closeModal()">Cancel</button>
+              <button type="submit" class="btn-action-gold" style="flex:1.4;" id="saveBtn">Save Entry ✦</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  ` : `
+  <div class="modal-backdrop" id="itemModal">
+    <div class="modal-box" style="max-width:${collectionType === 'works' || collectionType === 'team' ? '760px' : '620px'};">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;border-bottom:1px solid var(--border-subtle);padding-bottom:14px;">
+        <h3 id="modalHeading" style="font-size:16px;font-weight:800;color:#fff;">Add New Entry</h3>
+        <button type="button" style="background:none;border:none;color:#888;font-size:20px;cursor:pointer;" onclick="closeModal()">✕</button>
+      </div>
+      <form id="itemForm">
+        <input type="hidden" id="itemId">
+        <input type="hidden" id="itemImageUrl">
+        <input type="hidden" id="itemAltImageUrl">
+        ${collectionType === 'works' ? '<input type="hidden" id="itemVideoUrl">' : ''}
+        <div class="form-group">
+          <label class="form-label">${collectionType === 'works' ? 'Work title *' : (collectionType === 'team' ? 'Full Name *' : 'Title / Name *')}</label>
+          <input type="text" class="form-control" id="itemTitle" required maxlength="255" placeholder="${collectionType === 'works' ? 'e.g. Grew DRA across social platforms' : (collectionType === 'team' ? 'e.g. Karan Dayanidhi Maran' : 'Entry title or name')}">
+        </div>
+        ${collectionType === 'works' ? `
+        <div class="form-group">
+          <label class="form-label">Brand / capsule label *</label>
+          <input type="text" class="form-control" id="itemClient" required placeholder="e.g. DRA">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Text to highlight in yellow</label>
+          <input type="text" class="form-control" id="itemHighlight" placeholder="Must match part of the work title">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Filter category *</label>
+          <select class="form-control" id="itemCategory" required>
+            <option value="">Select a category</option>
+            ${workCategories.map(category => `<option value="${category.value}">${category.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Capsule texts</label>
+          <textarea class="form-control" id="itemTags" rows="2" placeholder="One capsule per line, e.g. Social Media"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Work image *</label>
+          <div class="upload-zone" id="workImageUploadZone">
+            <input type="file" id="workImageFileInput" accept="image/jpeg,image/png,image/webp,image/gif" onchange="handleWorkFileSelect('image', this)">
+            <div class="upload-zone-label"><div style="font-size:24px;opacity:0.3;margin-bottom:6px;">🖼</div><span>Click or drag &amp; drop an image</span><br><small style="color:var(--text-dim);font-size:10px;">JPG, PNG, WebP, or GIF — max 20MB — saved in /public/images/works/</small></div>
+          </div>
+          <div class="upload-preview" id="workImagePreview"><img id="workImagePreviewImg" src="" alt=""><span class="file-name" id="workImageFileName"></span></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hover video (optional)</label>
+          <div class="upload-zone" id="workVideoUploadZone">
+            <input type="file" id="workVideoFileInput" accept="video/mp4,video/webm" onchange="handleWorkFileSelect('video', this)">
+            <div class="upload-zone-label"><div style="font-size:24px;opacity:0.3;margin-bottom:6px;">▶</div><span>Click or drag &amp; drop a video</span><br><small style="color:var(--text-dim);font-size:10px;">MP4 or WebM — max 200MB — saved in /public/videos/works/</small></div>
+          </div>
+          <div id="workVideoPreview" style="display:none;margin-top:10px;">
+            <video id="workVideoPreviewPlayer" controls muted playsinline style="width:100%;max-height:180px;border-radius:8px;background:#000;"></video>
+            <div class="file-name" id="workVideoFileName" style="margin-top:6px;"></div>
+          </div>
+          <div id="workVideoEmpty" style="font-size:11px;color:var(--text-dim);margin-top:8px;">No hover video selected. Image-only cards will keep their image on hover.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subtext *</label>
+          <textarea class="form-control" id="itemDesc" rows="3" required placeholder="Short supporting text shown below the work title"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Work link (optional)</label>
+          <input type="text" class="form-control" id="itemLink" placeholder="/case-study/example or #">
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);margin:12px 0;"><input type="checkbox" id="itemShowOnHome"> Show this work on the homepage</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);margin:12px 0;"><input type="checkbox" id="itemIsActive" checked> Publish this work on the Our Works page</label>
+        ` : collectionType === 'team' ? `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="form-group">
+            <label class="form-label">Role / Designation *</label>
+            <input type="text" class="form-control" id="itemRole" required placeholder="e.g. Founder, CEO, Lead Video Editor">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Department *</label>
+            <select class="form-control" id="itemDepartment" required>
+              <option value="managers">Leadership (Managers)</option>
+              <option value="graphic">Designers (Graphic)</option>
+              <option value="video">Video Team</option>
+              <option value="webux">Web &amp; UI/UX</option>
+              <option value="performance">Performance Marketing</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:10px 0 16px;">
+          <!-- Image 1: Default Front Photo -->
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,215,0,0.3);border-radius:10px;padding:14px;">
+            <label class="form-label" style="color:#FFD700;display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#FFD700;"></span>
+              1. Default Photo (Card Front) *
+            </label>
+            <div class="upload-zone" id="teamFrontUploadZone" style="padding:16px 10px;">
+              <input type="file" id="teamFrontFileInput" accept="image/*,.svg" onchange="handleTeamFileSelect('front', this)">
+              <div class="upload-zone-label">
+                <div style="font-size:22px;opacity:0.4;margin-bottom:4px;">👤</div>
+                <span style="font-size:12px;">Click or drag &amp; drop</span><br>
+                <small style="color:var(--text-dim);font-size:10px;">Saved in /images/uploads/</small>
+              </div>
+            </div>
+            <div class="upload-preview" id="teamFrontPreview" style="margin-top:8px;">
+              <img id="teamFrontPreviewImg" src="" alt="">
+              <span class="file-name" id="teamFrontFileName" style="font-size:11px;"></span>
+              <button type="button" onclick="clearTeamUpload('front')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;">✕</button>
+            </div>
+            <div class="or-divider" style="margin:8px 0;font-size:10px;">or image path</div>
+            <input type="text" class="form-control" id="teamFrontUrlInput" placeholder="/images/Karan.png" style="font-size:11px;padding:7px 10px;" oninput="document.getElementById('itemImageUrl').value=this.value;tryPreviewTeamUrl('front', this.value)">
+          </div>
+
+          <!-- Image 2: Hover Flip Photo -->
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:14px;">
+            <label class="form-label" style="color:#fff;display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#888;"></span>
+              2. Hover / Flip Photo (Card Back)
+            </label>
+            <div class="upload-zone" id="teamBackUploadZone" style="padding:16px 10px;">
+              <input type="file" id="teamBackFileInput" accept="image/*,.svg" onchange="handleTeamFileSelect('back', this)">
+              <div class="upload-zone-label">
+                <div style="font-size:22px;opacity:0.4;margin-bottom:4px;">🔄</div>
+                <span style="font-size:12px;">Click or drag &amp; drop</span><br>
+                <small style="color:var(--text-dim);font-size:10px;">Shown when card flips on hover</small>
+              </div>
+            </div>
+            <div class="upload-preview" id="teamBackPreview" style="margin-top:8px;">
+              <img id="teamBackPreviewImg" src="" alt="">
+              <span class="file-name" id="teamBackFileName" style="font-size:11px;"></span>
+              <button type="button" onclick="clearTeamUpload('back')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;">✕</button>
+            </div>
+            <div class="or-divider" style="margin:8px 0;font-size:10px;">or image path</div>
+            <input type="text" class="form-control" id="teamBackUrlInput" placeholder="/images/Karan-alt.png" style="font-size:11px;padding:7px 10px;" oninput="document.getElementById('itemAltImageUrl').value=this.value;tryPreviewTeamUrl('back', this.value)">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="form-group">
+            <label class="form-label">Hover / Flip Name (optional)</label>
+            <input type="text" class="form-control" id="itemAltName" placeholder="e.g. Karan or Nickname">
+            <small style="color:var(--text-dim);font-size:10px;">Defaults to Full Name if left blank.</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label">LinkedIn / Profile URL (optional)</label>
+            <input type="text" class="form-control" id="itemLink" placeholder="https://linkedin.com/in/...">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hover / Flip Bio or Tagline</label>
+          <textarea class="form-control" id="itemDesc" rows="3" placeholder="e.g. Founder, Chaos Manager, Strategy &amp; UNO Expert"></textarea>
+        </div>
+
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);margin:12px 0;">
+          <input type="checkbox" id="itemIsActive" checked> Publish this team member on About Us page
+        </label>
+        ` : `
+        <div class="form-group">
+          <label class="form-label">Category / Role / Tag</label>
+          <input type="text" class="form-control" id="itemCategory" placeholder="e.g. Branding, Founder, Digital Marketing">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Image / Asset</label>
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="imageFileInput" accept="image/*,.svg,video/mp4" onchange="handleFileSelect(this)">
+            <div class="upload-zone-label"><div style="font-size:24px;opacity:0.3;margin-bottom:6px;">🖼</div><span>Click or drag &amp; drop to upload</span><br><small style="color:var(--text-dim);font-size:10px;">JPG PNG WebP SVG MP4 — max 50MB — stored in /images/uploads/</small></div>
+            <div class="upload-progress" id="uploadProgress"><div class="upload-progress-bar" id="uploadProgressBar"></div></div>
+          </div>
+          <div class="upload-preview" id="uploadPreview"><img id="uploadPreviewImg" src="" alt=""><span class="file-name" id="uploadFileName"></span><button type="button" onclick="clearUpload()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px;">✕</button></div>
+          <div class="or-divider">or paste URL directly</div>
+          <input type="text" class="form-control" id="itemImageUrlInput" placeholder="/images/uploads/my-image.png or https://..." oninput="document.getElementById('itemImageUrl').value=this.value;tryPreviewUrl(this.value)">
+        </div>
+        <div class="form-group"><label class="form-label">External Link / URL (optional)</label><input type="text" class="form-control" id="itemLink" placeholder="/case-study/slug or https://linkedin.com/..."></div>
+        <div class="form-group"><label class="form-label">Description / Excerpt / Bio</label><textarea class="form-control" id="itemDesc" rows="4" placeholder="Short description or bio..."></textarea></div>
+        `}
+        <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;">
+          <button type="button" class="btn-live-preview" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn-action-gold" id="saveBtn">Save Entry ✦</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  `}
+
+  <script>
+    const COLKEY = '${collectionKey}';
+    const IS_WORKS = ${collectionType === 'works'};
+    const IS_BLOGS = ${collectionType === 'blogs'};
+    const IS_TEAM = ${collectionType === 'team'};
+    const modal = document.getElementById('itemModal');
+    const form = document.getElementById('itemForm');
+
+    document.getElementById('btnOpenNewItem').addEventListener('click', () => {
+      form.reset(); clearUpload();
+      document.getElementById('itemId').value = '';
+      document.getElementById('itemImageUrl').value = '';
+      const altImageUrlInput = document.getElementById('itemAltImageUrl');
+      if (altImageUrlInput) altImageUrlInput.value = '';
+      const imageUrlInput = document.getElementById('itemImageUrlInput');
+      if (imageUrlInput) imageUrlInput.value = '';
+      const videoUrlInput = document.getElementById('itemVideoUrl');
+      if (videoUrlInput) videoUrlInput.value = '';
+      const activeCheckbox = document.getElementById('itemIsActive');
+      if (activeCheckbox) activeCheckbox.checked = true;
+      const publishedCheckbox = document.getElementById('itemIsPublished');
+      if (publishedCheckbox) publishedCheckbox.checked = true;
+      const publishedAtInput = document.getElementById('itemPublishedAt');
+      if (publishedAtInput) {
+        const today = new Date();
+        const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+        publishedAtInput.value = localDate.toISOString().slice(0, 10);
+      }
+      if (IS_TEAM) {
+        clearTeamUpload('front');
+        clearTeamUpload('back');
+        const roleInput = document.getElementById('itemRole');
+        if (roleInput) roleInput.value = '';
+        const deptInput = document.getElementById('itemDepartment');
+        if (deptInput) deptInput.value = 'managers';
+        const altNameInput = document.getElementById('itemAltName');
+        if (altNameInput) altNameInput.value = '';
+      }
+      if (IS_BLOGS) {
+        document.getElementById('itemReadTime').dataset.edited = '';
+        window.loadBlogEditorContent('');
+        document.getElementById('blogRichEditor').hidden = false;
+        document.getElementById('blogEditorPreview').hidden = true;
+        document.getElementById('btnPreviewBlog').textContent = 'Preview';
+        document.getElementById('btnPreviewBlog').setAttribute('aria-pressed', 'false');
+        const sp = document.getElementById('slugPreviewText');
+        if (sp) sp.textContent = 'your-article-url';
+        const ts = document.getElementById('blogTopbarStats');
+        if (ts) ts.textContent = '0 words · 1 min read';
+      }
+      const slugInput = document.getElementById('itemSlug');
+      if (slugInput) slugInput.dataset.edited = '';
+      document.getElementById('modalHeading').textContent = 'Add New ${config.title}';
+      modal.classList.add('show');
+      document.body.classList.add('modal-open');
+      if (IS_BLOGS) document.body.classList.add('blog-studio-active');
+    });
+
+    function openEditModal(itemData) {
+      const item = typeof itemData === 'string' ? JSON.parse(itemData) : itemData;
+      form.reset(); clearUpload();
+      document.getElementById('itemId').value = item.id || '';
+      document.getElementById('itemTitle').value = item.title || item.name || '';
+      const categoryInput = document.getElementById('itemCategory');
+      if (categoryInput) categoryInput.value = item.category || item.role || item.author || '';
+      const linkInput = document.getElementById('itemLink');
+      if (linkInput) linkInput.value = item.link || (IS_WORKS ? '' : item.videoUrl || item.linkedinUrl || item.caseStudyUrl) || '';
+      const descriptionInput = document.getElementById('itemDesc');
+      if (descriptionInput) descriptionInput.value = item.shortDesc || item.summary || item.excerpt || item.bio || '';
+      const img = item.image || item.coverImage || item.photo || '';
+      document.getElementById('itemImageUrl').value = img;
+      const imageUrlInput = document.getElementById('itemImageUrlInput');
+      if (imageUrlInput) imageUrlInput.value = img;
+      if (IS_WORKS) {
+        document.getElementById('itemClient').value = item.client || '';
+        document.getElementById('itemHighlight').value = item.highlightText || '';
+        document.getElementById('itemTags').value = Array.isArray(item.tags) ? item.tags.join('\\n') : '';
+        document.getElementById('itemVideoUrl').value = item.videoUrl || '';
+        document.getElementById('itemShowOnHome').checked = Boolean(item.showOnHome);
+        document.getElementById('itemIsActive').checked = item.isActive !== false;
+        if (img) showWorkImagePreview(img, img.split('/').pop());
+        if (item.videoUrl) showWorkVideoPreview(item.videoUrl, item.videoUrl.split('/').pop());
+      } else if (IS_TEAM) {
+        document.getElementById('itemTitle').value = item.name || item.title || '';
+        const roleInput = document.getElementById('itemRole');
+        if (roleInput) roleInput.value = item.role || item.category || '';
+        const deptInput = document.getElementById('itemDepartment');
+        if (deptInput) deptInput.value = item.department || 'managers';
+        
+        const frontImg = item.image || '';
+        document.getElementById('itemImageUrl').value = frontImg;
+        const frontUrlInput = document.getElementById('teamFrontUrlInput');
+        if (frontUrlInput) frontUrlInput.value = frontImg;
+        if (frontImg) tryPreviewTeamUrl('front', frontImg);
+
+        const backImg = item.altImage || item.image || '';
+        const altImgHidden = document.getElementById('itemAltImageUrl');
+        if (altImgHidden) altImgHidden.value = backImg;
+        const backUrlInput = document.getElementById('teamBackUrlInput');
+        if (backUrlInput) backUrlInput.value = backImg;
+        if (backImg) tryPreviewTeamUrl('back', backImg);
+
+        const altNameInput = document.getElementById('itemAltName');
+        if (altNameInput) altNameInput.value = item.altName || '';
+        const descInput = document.getElementById('itemDesc');
+        if (descInput) descInput.value = item.bio || item.shortDesc || item.role || '';
+        const linkInput = document.getElementById('itemLink');
+        if (linkInput) linkInput.value = item.linkedinUrl || item.link || '';
+        const activeInput = document.getElementById('itemIsActive');
+        if (activeInput) activeInput.checked = item.isActive !== false;
+      } else if (IS_BLOGS) {
+        document.getElementById('itemSlug').value = item.slug || '';
+        document.getElementById('itemSlug').dataset.edited = 'true';
+        const sp = document.getElementById('slugPreviewText');
+        if (sp) sp.textContent = item.slug || 'your-article-url';
+        document.getElementById('itemAuthor').value = item.author || '';
+        document.getElementById('itemTags').value = Array.isArray(item.tags) ? item.tags.join('\\n') : '';
+        document.getElementById('itemPublishedAt').value = item.publishedAt || '';
+        document.getElementById('itemReadTime').value = item.readTime || '';
+        document.getElementById('itemReadTime').dataset.edited = item.readTime ? 'true' : '';
+        document.getElementById('itemExcerpt').value = item.excerpt || '';
+        window.loadBlogEditorContent(item.content || '');
+        document.getElementById('blogRichEditor').hidden = false;
+        document.getElementById('blogEditorPreview').hidden = true;
+        document.getElementById('btnPreviewBlog').textContent = 'Preview';
+        document.getElementById('btnPreviewBlog').setAttribute('aria-pressed', 'false');
+        document.getElementById('itemIsPublished').checked = item.isPublished !== false;
+        if (img) tryPreviewUrl(img);
+        updateBlogEditorStats();
+      } else if (img) {
+        tryPreviewUrl(img);
+      }
+      document.getElementById('modalHeading').textContent = 'Edit: ' + (item.title || item.name || 'Entry');
+      modal.classList.add('show');
+      document.body.classList.add('modal-open');
+      if (IS_BLOGS) document.body.classList.add('blog-studio-active');
+    }
+
+    function closeModal() {
+      modal.classList.remove('show');
+      document.body.classList.remove('modal-open');
+      document.body.classList.remove('blog-studio-active');
+    }
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+    });
+
+    if (IS_WORKS) {
+      ['image', 'video'].forEach(type => {
+        const zone = document.getElementById('work' + (type === 'image' ? 'Image' : 'Video') + 'UploadZone');
+        if (!zone) return;
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', e => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          if (e.dataTransfer.files[0]) uploadWorkFile(type, e.dataTransfer.files[0]);
+        });
+      });
+    } else if (IS_TEAM) {
+      ['front', 'back'].forEach(type => {
+        const zone = document.getElementById(type === 'front' ? 'teamFrontUploadZone' : 'teamBackUploadZone');
+        if (!zone) return;
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', e => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          if (e.dataTransfer.files[0]) uploadTeamFile(type, e.dataTransfer.files[0]);
+        });
+      });
+    } else {
+      const zone = document.getElementById('uploadZone');
+      if (zone) {
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', e => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          const file = e.dataTransfer.files[0];
+          if (!file) return;
+          if (IS_BLOGS) uploadBlogFile(file);
+          else uploadFile(file);
+        });
+      }
+    }
+
+    function handleFileSelect(input) {
+      if (!input.files[0]) return;
+      if (IS_BLOGS) uploadBlogFile(input.files[0]);
+      else uploadFile(input.files[0]);
+    }
+    function handleWorkFileSelect(type, input) {
+      if (input.files[0]) uploadWorkFile(type, input.files[0]);
+    }
+    function handleTeamFileSelect(type, input) {
+      if (input.files[0]) uploadTeamFile(type, input.files[0]);
+    }
+
+    async function uploadTeamFile(type, file) {
+      const isFront = type === 'front';
+      const input = document.getElementById(isFront ? 'teamFrontFileInput' : 'teamBackFileInput');
+      if (input) input.disabled = true;
+      const fd = new FormData();
+      fd.append('file', file);
+      try {
+        const res = await fetch('/api/admin/media/upload', { method: 'POST', body: fd });
+        const r = await res.json();
+        if (!res.ok || !r.success) throw new Error(r.error || 'Upload failed');
+        const hidden = document.getElementById(isFront ? 'itemImageUrl' : 'itemAltImageUrl');
+        if (hidden) hidden.value = r.url;
+        const urlInput = document.getElementById(isFront ? 'teamFrontUrlInput' : 'teamBackUrlInput');
+        if (urlInput) urlInput.value = r.url;
+        showTeamPreview(type, r.url, file.name);
+        showToast('Uploaded ' + (isFront ? 'front' : 'flip') + ' photo: ' + r.filename);
+      } catch (err) {
+        showToast('Upload error: ' + err.message, true);
+      } finally {
+        if (input) { input.disabled = false; input.value = ''; }
+      }
+    }
+
+    function showTeamPreview(type, url, name) {
+      const isFront = type === 'front';
+      const img = document.getElementById(isFront ? 'teamFrontPreviewImg' : 'teamBackPreviewImg');
+      const fileName = document.getElementById(isFront ? 'teamFrontFileName' : 'teamBackFileName');
+      const preview = document.getElementById(isFront ? 'teamFrontPreview' : 'teamBackPreview');
+      if (img) img.src = url;
+      if (fileName) fileName.textContent = name || url.split('/').pop();
+      if (preview) preview.classList.add('has-image');
+    }
+
+    function tryPreviewTeamUrl(type, url) {
+      if (/\.(jpg|jpeg|png|webp|gif|svg)$/i.test(url)) {
+        showTeamPreview(type, url, url.split('/').pop());
+      }
+    }
+
+    function clearTeamUpload(type) {
+      const isFront = type === 'front';
+      const hidden = document.getElementById(isFront ? 'itemImageUrl' : 'itemAltImageUrl');
+      if (hidden) hidden.value = '';
+      const urlInput = document.getElementById(isFront ? 'teamFrontUrlInput' : 'teamBackUrlInput');
+      if (urlInput) urlInput.value = '';
+      const preview = document.getElementById(isFront ? 'teamFrontPreview' : 'teamBackPreview');
+      if (preview) preview.classList.remove('has-image');
+      const fileInput = document.getElementById(isFront ? 'teamFrontFileInput' : 'teamBackFileInput');
+      if (fileInput) fileInput.value = '';
+    }
+
+    async function uploadWorkFile(type, file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      const inputId = type === 'image' ? 'workImageFileInput' : 'workVideoFileInput';
+      const input = document.getElementById(inputId);
+      input.disabled = true;
+      try {
+        const response = await fetch('/api/admin/works/upload/' + type, { method: 'POST', body: formData });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.error || 'Upload failed.');
+        if (type === 'image') {
+          document.getElementById('itemImageUrl').value = result.url;
+          showWorkImagePreview(result.url, file.name);
+        } else {
+          document.getElementById('itemVideoUrl').value = result.url;
+          showWorkVideoPreview(result.url, file.name);
+        }
+        showToast('Uploaded: ' + result.filename);
+      } catch (error) {
+        showToast('Upload error: ' + error.message, true);
+      } finally {
+        input.disabled = false;
+        input.value = '';
+      }
+    }
+
+    async function uploadFile(file) {
+      const prog = document.getElementById('uploadProgress');
+      const bar = document.getElementById('uploadProgressBar');
+      prog.classList.add('active'); bar.style.width = '20%';
+      const fd = new FormData(); fd.append('file', file);
+      try {
+        bar.style.width = '65%';
+        const res = await fetch('/api/admin/media/upload', { method:'POST', body:fd });
+        bar.style.width = '95%';
+        const r = await res.json();
+        if (r.success) {
+          bar.style.width = '100%';
+          document.getElementById('itemImageUrl').value = r.url;
+          document.getElementById('itemImageUrlInput').value = r.url;
+          showPreview(r.url, file.name);
+          showToast('Uploaded: ' + r.filename);
+        } else { showToast(r.error || 'Upload failed', true); }
+      } catch(err) { showToast('Upload error: ' + err.message, true); }
+      finally { setTimeout(() => { prog.classList.remove('active'); bar.style.width='0'; }, 900); }
+    }
+
+    async function uploadBlogFile(file) {
+      const input = document.getElementById('imageFileInput');
+      input.disabled = true;
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const response = await fetch('/api/admin/blogs/upload/image', { method: 'POST', body: formData });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.error || 'Cover image upload failed.');
+        document.getElementById('itemImageUrl').value = result.url;
+        document.getElementById('itemImageUrlInput').value = result.url;
+        showPreview(result.url, file.name);
+        showToast('Uploaded: ' + result.filename);
+      } catch (error) {
+        showToast('Upload error: ' + error.message, true);
+      } finally {
+        input.disabled = false;
+        input.value = '';
+      }
+    }
+
+    function showPreview(url, name) {
+      document.getElementById('uploadPreviewImg').src = url;
+      document.getElementById('uploadFileName').textContent = name || url.split('/').pop();
+      document.getElementById('uploadPreview').classList.add('has-image');
+    }
+    function showWorkImagePreview(url, name) {
+      document.getElementById('workImagePreviewImg').src = url;
+      document.getElementById('workImageFileName').textContent = name || url.split('/').pop();
+      document.getElementById('workImagePreview').classList.add('has-image');
+    }
+    function showWorkVideoPreview(url, name) {
+      const preview = document.getElementById('workVideoPreview');
+      const player = document.getElementById('workVideoPreviewPlayer');
+      player.src = url;
+      preview.style.display = 'block';
+      document.getElementById('workVideoFileName').textContent = name || url.split('/').pop();
+      document.getElementById('workVideoEmpty').style.display = 'none';
+    }
+    function tryPreviewUrl(url) {
+      if (/\.(jpg|jpeg|png|webp|gif|svg)$/i.test(url)) showPreview(url, url.split('/').pop());
+    }
+    function clearUpload() {
+      const imageUrl = document.getElementById('itemImageUrl');
+      if (imageUrl) imageUrl.value = '';
+      const altImageUrl = document.getElementById('itemAltImageUrl');
+      if (altImageUrl) altImageUrl.value = '';
+      const imageUrlInput = document.getElementById('itemImageUrlInput');
+      if (imageUrlInput) imageUrlInput.value = '';
+      const uploadPreview = document.getElementById('uploadPreview');
+      if (uploadPreview) uploadPreview.classList.remove('has-image');
+      const imageInput = document.getElementById('imageFileInput');
+      if (imageInput) imageInput.value = '';
+      const workImageInput = document.getElementById('workImageFileInput');
+      if (workImageInput) workImageInput.value = '';
+      const workVideoInput = document.getElementById('workVideoFileInput');
+      if (workVideoInput) workVideoInput.value = '';
+      const workImagePreview = document.getElementById('workImagePreview');
+      if (workImagePreview) workImagePreview.classList.remove('has-image');
+      const workVideoPreview = document.getElementById('workVideoPreview');
+      if (workVideoPreview) workVideoPreview.style.display = 'none';
+      const workVideoPlayer = document.getElementById('workVideoPreviewPlayer');
+      if (workVideoPlayer) workVideoPlayer.removeAttribute('src');
+      const workVideoEmpty = document.getElementById('workVideoEmpty');
+      if (workVideoEmpty) workVideoEmpty.style.display = 'block';
+      if (IS_TEAM) {
+        clearTeamUpload('front');
+        clearTeamUpload('back');
+      }
+    }
+
+    if (IS_BLOGS) {
+      document.getElementById('itemTitle').addEventListener('input', event => {
+        const slugInput = document.getElementById('itemSlug');
+        if (!slugInput.dataset.edited) {
+          slugInput.value = event.target.value.toLowerCase()
+            .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        }
+        const sp = document.getElementById('slugPreviewText');
+        if (sp) sp.textContent = slugInput.value || 'your-article-url';
+      });
+      document.getElementById('itemSlug').addEventListener('input', event => {
+        event.target.dataset.edited = 'true';
+        const sp = document.getElementById('slugPreviewText');
+        if (sp) sp.textContent = event.target.value || 'your-article-url';
+      });
+
+      const contentInput = document.getElementById('itemContent');
+      const richEditor = document.getElementById('blogRichEditor');
+      const preview = document.getElementById('blogEditorPreview');
+      const previewButton = document.getElementById('btnPreviewBlog');
+      const wordCount = document.getElementById('blogWordCount');
+      const readTimeInput = document.getElementById('itemReadTime');
+      let savedEditorRange = null;
+
+      function escapeBlogHtml(value) {
+        return value.replace(/[&<>"']/g, character => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[character]);
+      }
+
+      function safeBlogLink(value) {
+        return /^(https?:\\/\\/|\\/(?!\\/)|#|mailto:)/i.test(value);
+      }
+
+      function renderBlogMarkdown(markdown) {
+        const blocks = markdown.trim().split(/\\r?\\n\\s*\\r?\\n/).filter(Boolean);
+        const renderInline = value => {
+          let escaped = escapeBlogHtml(value);
+          escaped = escaped.replace(/!\\[([^\\]]*)\\]\\(([^)\\s]+)\\)/g, (match, alt, url) =>
+            /^\\/images\\/[a-z0-9_./%-]+$/i.test(url)
+              ? '<img src="' + url + '" alt="' + alt + '">'
+              : match
+          );
+          escaped = escaped.replace(/\\[([^\\]]+)\\]\\(([^)\\s]+)\\)/g, (match, label, url) =>
+            safeBlogLink(url) ? '<a href="' + url + '">' + label + '</a>' : label
+          );
+          return escaped
+            .replace(/\\x60([^\\x60]+)\\x60/g, '<code>$1</code>')
+            .replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>')
+            .replace(/_([^_]+)_/g, '<em>$1</em>');
+        };
+
+        return blocks.map(block => {
+          const lines = block.split(/\\r?\\n/);
+          const heading = lines.length === 1 && lines[0].match(/^(#{2,4})\\s+(.+)$/);
+          if (heading) {
+            const level = heading[1].length;
+            return '<h' + level + '>' + renderInline(heading[2]) + '</h' + level + '>';
+          }
+          if (lines.every(line => /^\\s*[-*]\\s+/.test(line))) {
+            return '<ul>' + lines.map(line => '<li>' + renderInline(line.replace(/^\\s*[-*]\\s+/, '')) + '</li>').join('') + '</ul>';
+          }
+          if (lines.every(line => /^\\s*\\d+[.)]\\s+/.test(line))) {
+            return '<ol>' + lines.map(line => '<li>' + renderInline(line.replace(/^\\s*\\d+[.)]\\s+/, '')) + '</li>').join('') + '</ol>';
+          }
+          if (lines.every(line => /^\\s*&gt;\\s?/.test(escapeBlogHtml(line)))) {
+            return '<blockquote>' + lines.map(line => renderInline(line.replace(/^\\s*>\\s?/, ''))).join('<br>') + '</blockquote>';
+          }
+          return '<p>' + lines.map(renderInline).join('<br>') + '</p>';
+        }).join('');
+      }
+
+      function serializeEditorNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) return node.nodeValue;
+        if (node.nodeType !== Node.ELEMENT_NODE) return '';
+
+        const tag = node.tagName.toLowerCase();
+        const children = Array.from(node.childNodes).map(serializeEditorNode).join('');
+        if (tag === 'img') {
+          const src = node.getAttribute('src') || '';
+          const alt = (node.getAttribute('alt') || '').replace(/[\]\\]/g, '\\$&');
+          return /^\\/images\\/[a-z0-9_./%-]+$/i.test(src) ? '![' + alt + '](' + src + ')' : '';
+        }
+        if (tag === 'br') return '\\n';
+        if (tag === 'strong' || tag === 'b') return '**' + children + '**';
+        if (tag === 'em' || tag === 'i') return '_' + children + '_';
+        if (tag === 'code') return String.fromCharCode(96) + children + String.fromCharCode(96);
+        if (tag === 'a') {
+          const href = node.getAttribute('href') || '';
+          return safeBlogLink(href) ? '[' + children + '](' + href + ')' : children;
+        }
+        if (/^h[2-4]$/.test(tag)) return '#'.repeat(Number(tag.slice(1))) + ' ' + children.trim();
+        if (tag === 'li') return children.trim();
+        if (tag === 'ul' || tag === 'ol') {
+          const items = Array.from(node.children).filter(child => child.tagName.toLowerCase() === 'li');
+          return items.map((item, index) =>
+            (tag === 'ol' ? (index + 1) + '. ' : '- ') + serializeEditorNode(item).trim()
+          ).join('\\n');
+        }
+        if (tag === 'blockquote') {
+          return children.trim().split(/\\r?\\n/).map(line => '> ' + line).join('\\n');
+        }
+        if (tag === 'p' || tag === 'div') return children.trim();
+        return children;
+      }
+
+      function serializeEditor() {
+        return Array.from(richEditor.childNodes)
+          .map(serializeEditorNode)
+          .filter(Boolean)
+          .join('\\n\\n')
+          .replace(/\\n{3,}/g, '\\n\\n')
+          .trim();
+      }
+
+      function syncEditorContent() {
+        contentInput.value = serializeEditor();
+      }
+      window.loadBlogEditorContent = markdown => {
+        contentInput.value = markdown || '';
+        richEditor.innerHTML = renderBlogMarkdown(contentInput.value);
+        updateBlogEditorStats();
+      };
+      window.getBlogEditorContent = () => {
+        syncEditorContent();
+        return contentInput.value;
+      };
+
+      function rememberEditorSelection() {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) return;
+        const range = selection.getRangeAt(0);
+        if (richEditor.contains(range.commonAncestorContainer)) {
+          savedEditorRange = range.cloneRange();
+        }
+      }
+
+      function restoreEditorSelection() {
+        richEditor.focus();
+        if (!savedEditorRange) return;
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(savedEditorRange);
+      }
+
+      function insertEditorHtml(html) {
+        restoreEditorSelection();
+        document.execCommand('insertHTML', false, html);
+        rememberEditorSelection();
+        syncEditorContent();
+        updateBlogEditorStats();
+      }
+
+      function updateBlogEditorStats() {
+        syncEditorContent();
+        const words = contentInput.value.trim().split(/\s+/).filter(Boolean).length;
+        const minutes = Math.max(1, Math.ceil(words / 200));
+        wordCount.textContent = words + ' words · about ' + minutes + ' min read';
+        const topbarStats = document.getElementById('blogTopbarStats');
+        if (topbarStats) topbarStats.textContent = words + ' words · ' + minutes + ' min read';
+        if (!readTimeInput.dataset.edited) readTimeInput.value = minutes + ' min read';
+        if (!preview.hidden) preview.innerHTML = renderBlogMarkdown(contentInput.value) || '<p>Your article preview will appear here.</p>';
+      }
+
+      const toolbarHtml = {
+        '## Heading\\n': '<h2>Heading</h2><p><br></p>',
+        '### Subheading\\n': '<h3>Subheading</h3><p><br></p>',
+        '**Bold text**': '<strong>Bold text</strong>',
+        '_Italic text_': '<em>Italic text</em>',
+        '- List item\\n': '<ul><li>List item</li></ul><p><br></p>',
+        '> Quote\\n': '<blockquote>Quote</blockquote><p><br></p>'
+      };
+      document.querySelectorAll('[data-markdown]').forEach(button => {
+        button.addEventListener('mousedown', rememberEditorSelection);
+        button.addEventListener('click', () => {
+          insertEditorHtml(toolbarHtml[button.dataset.markdown] || '');
+        });
+      });
+
+      richEditor.addEventListener('input', updateBlogEditorStats);
+      richEditor.addEventListener('keyup', rememberEditorSelection);
+      richEditor.addEventListener('mouseup', rememberEditorSelection);
+      richEditor.addEventListener('focus', rememberEditorSelection);
+      readTimeInput.addEventListener('input', () => { readTimeInput.dataset.edited = 'true'; });
+      previewButton.addEventListener('click', () => {
+        const showPreview = preview.hidden;
+        preview.hidden = !showPreview;
+        richEditor.hidden = showPreview;
+        previewButton.setAttribute('aria-pressed', String(showPreview));
+        previewButton.textContent = showPreview ? 'Write' : 'Preview';
+        if (showPreview) preview.innerHTML = renderBlogMarkdown(contentInput.value) || '<p>Your article preview will appear here.</p>';
+        else richEditor.focus();
+      });
+
+      document.getElementById('btnInsertBlogImage').addEventListener('mousedown', rememberEditorSelection);
+      document.getElementById('btnInsertBlogImage').addEventListener('click', () => {
+        document.getElementById('blogInlineImageInput').click();
+      });
+      document.getElementById('blogInlineImageInput').addEventListener('change', async event => {
+        const file = event.target.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('file', file);
+        const uploadInput = document.getElementById('blogInlineImageInput');
+        uploadInput.disabled = true;
+        try {
+          const response = await fetch('/api/admin/blogs/upload/inline-image', { method: 'POST', body: formData });
+          const result = await response.json();
+          if (!response.ok || !result.success) throw new Error(result.error || 'Article image upload failed.');
+          const imageAlt = file.name.replace(/\\.[^.]+$/, '').replace(/[^a-zA-Z0-9 _-]/g, '');
+          insertEditorHtml('<p><img src="' + escapeBlogHtml(result.url) + '" alt="' + escapeBlogHtml(imageAlt) + '"></p><p><br></p>');
+          showToast('Article image uploaded and inserted.');
+        } catch (error) {
+          showToast('Image upload error: ' + error.message, true);
+        } finally {
+          uploadInput.disabled = false;
+          uploadInput.value = '';
+        }
+      });
+      richEditor.innerHTML = renderBlogMarkdown(contentInput.value);
+      updateBlogEditorStats();
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true; btn.textContent = 'Saving...';
+      const payload = IS_WORKS ? {
+        id: document.getElementById('itemId').value || undefined,
+        client: document.getElementById('itemClient').value,
+        title: document.getElementById('itemTitle').value,
+        highlightText: document.getElementById('itemHighlight').value,
+        category: document.getElementById('itemCategory').value,
+        tags: document.getElementById('itemTags').value.split(/\\r?\\n/).map(tag => tag.trim()).filter(Boolean),
+        image: document.getElementById('itemImageUrl').value,
+        videoUrl: document.getElementById('itemVideoUrl').value,
+        link: document.getElementById('itemLink').value,
+        shortDesc: document.getElementById('itemDesc').value,
+        showOnHome: document.getElementById('itemShowOnHome').checked,
+        isActive: document.getElementById('itemIsActive').checked
+      } : IS_BLOGS ? {
+        id: document.getElementById('itemId').value || undefined,
+        title: document.getElementById('itemTitle').value,
+        slug: document.getElementById('itemSlug').value,
+        author: document.getElementById('itemAuthor').value,
+        tags: document.getElementById('itemTags').value.split(/\\r?\\n/).map(tag => tag.trim()).filter(Boolean),
+        publishedAt: document.getElementById('itemPublishedAt').value,
+        readTime: document.getElementById('itemReadTime').value,
+        excerpt: document.getElementById('itemExcerpt').value,
+        content: window.getBlogEditorContent(),
+        coverImage: document.getElementById('itemImageUrl').value,
+        isPublished: document.getElementById('itemIsPublished').checked
+      } : IS_TEAM ? {
+        id: document.getElementById('itemId').value || undefined,
+        name: document.getElementById('itemTitle').value,
+        title: document.getElementById('itemTitle').value,
+        role: document.getElementById('itemRole').value,
+        category: document.getElementById('itemRole').value,
+        department: document.getElementById('itemDepartment').value,
+        image: document.getElementById('itemImageUrl').value,
+        altImage: (document.getElementById('itemAltImageUrl') && document.getElementById('itemAltImageUrl').value) || document.getElementById('itemImageUrl').value,
+        altName: (document.getElementById('itemAltName') && document.getElementById('itemAltName').value) || document.getElementById('itemTitle').value,
+        bio: document.getElementById('itemDesc').value,
+        shortDesc: document.getElementById('itemDesc').value,
+        linkedinUrl: (document.getElementById('itemLink') && document.getElementById('itemLink').value) || '',
+        link: (document.getElementById('itemLink') && document.getElementById('itemLink').value) || '',
+        isActive: document.getElementById('itemIsActive') ? document.getElementById('itemIsActive').checked : true
+      } : {
+        id: document.getElementById('itemId').value || undefined,
+        title: document.getElementById('itemTitle').value,
+        category: document.getElementById('itemCategory').value,
+        image: document.getElementById('itemImageUrl').value,
+        link: document.getElementById('itemLink').value,
+        shortDesc: document.getElementById('itemDesc').value,
+      };
+      if (IS_TEAM && !payload.image) {
+        showToast('Please upload or provide a default front photo for the team member.', true);
+        btn.disabled = false;
+        btn.textContent = 'Save Entry ✦';
+        return;
+      }
+      if (IS_BLOGS && !payload.content.trim()) {
+        showToast('Add article content before saving.', true);
+        btn.disabled = false;
+        btn.textContent = 'Save Entry ✦';
+        return;
+      }
+      if (!payload.id) delete payload.id;
+      try {
+        const res = await fetch('/api/admin/collections/' + COLKEY, {
+          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+        });
+        const r = await res.json();
+        if (r.success) { showToast('Entry saved!'); setTimeout(() => location.reload(), 600); }
+        else { showToast(r.error || 'Save failed', true); }
+      } catch(err) { showToast('Error: ' + err.message, true); }
+      finally { btn.disabled=false; btn.textContent='Save Entry ✦'; }
+    });
+
+    async function deleteItem(colKey, id) {
+      if (!confirm('Delete this entry permanently?')) return;
+      try {
+        const res = await fetch('/api/admin/collections/' + colKey + '/' + id, { method:'DELETE' });
+        const r = await res.json();
+        if (r.success) { showToast('Entry removed'); document.getElementById('card_' + id)?.remove(); }
+        else showToast(r.error, true);
+      } catch(err) { showToast('Delete error: ' + err.message, true); }
+    }
+  </script>
+`}) %>

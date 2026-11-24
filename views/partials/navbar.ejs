@@ -1,0 +1,412 @@
+<!-- ═══════════════════════════════════════════
+     NAVBAR — Liquid Glass + Full-Screen Overlay
+     Integrated from the supplied liquid-glass navbar
+═══════════════════════════════════════════ -->
+<!-- SVG filter for the supplied liquid-glass navbar -->
+<svg style="display:none" aria-hidden="true">
+  <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+    <feTurbulence type="fractalNoise" baseFrequency="0.001 0.005" numOctaves="1" seed="17" result="turbulence"/>
+    <feComponentTransfer in="turbulence" result="mapped">
+      <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5"/>
+      <feFuncG type="gamma" amplitude="0" exponent="1" offset="0"/>
+      <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5"/>
+    </feComponentTransfer>
+    <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap"/>
+    <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight">
+      <fePointLight x="-200" y="-200" z="300"/>
+    </feSpecularLighting>
+    <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage"/>
+    <feDisplacementMap in="SourceGraphic" in2="softMap" scale="200" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<!-- Flubber for shape morphing animation -->
+<script src="https://cdn.jsdelivr.net/npm/flubber@0.4.2/build/flubber.min.js"></script>
+
+    <!-- OVERLAY (full-screen yellow menu) -->
+    <div class="nav-overlay" id="navOverlay">
+      <div class="nav-overlay-inner">
+        <ul class="nav-links" id="navLinks">
+          <li data-preview="about">
+            <a href="/about-us" class="nav-link-clip">
+              <span class="nav-link-track">
+                <span class="t-solid">About Us</span>
+                <span class="t-stroke">About Us</span>
+              </span>
+            </a>
+          </li>
+          <li data-preview="services">
+            <a href="/our-services" class="nav-link-clip">
+              <span class="nav-link-track">
+                <span class="t-solid">Our Services</span>
+                <span class="t-stroke">Our Services</span>
+              </span>
+            </a>
+          </li>
+          <li data-preview="work">
+            <a href="/our-works" class="nav-link-clip">
+              <span class="nav-link-track">
+                <span class="t-solid">Our Work</span>
+                <span class="t-stroke">Our Work</span>
+              </span>
+            </a>
+          </li>
+          <li data-preview="blog">
+            <a href="/blog" class="nav-link-clip">
+              <span class="nav-link-track">
+                <span class="t-solid">Blogs</span>
+                <span class="t-stroke">Blogs</span>
+              </span>
+            </a>
+          </li>
+          <li data-preview="careers">
+            <a href="/careers" class="nav-link-clip">
+              <span class="nav-link-track">
+                <span class="t-solid">Careers</span>
+                <span class="t-stroke">Careers</span>
+              </span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Preview Area -->
+        <div class="nav-preview-area">
+          <!-- About Us -->
+          <div class="preview-item" id="preview-about">
+            <div class="preview-logo-img">
+              <img src="/images/group-c-logo.svg" alt="About Us">
+            </div>
+            <span class="preview-label">Learn about our team</span>
+          </div>
+          <!-- Our Services -->
+          <div class="preview-item" id="preview-services">
+            <div class="preview-img-wrap" id="slideshow-services">
+              <img src="/images/1_2.png" alt="Services 1" class="active">
+              <img src="/images/2_2.png" alt="Services 2">
+              <img src="/images/3_2.png" alt="Services 3">
+              <img src="/images/4_2.png" alt="Services 4">
+              <img src="/images/5_1.png" alt="Services 5">
+              <img src="/images/6_3.png" alt="Services 6">
+              <img src="/images/7.png" alt="Services 7">
+              <img src="/images/8_1.png" alt="Services 8">
+              <img src="/images/9_1.png" alt="Services 9">
+              <img src="/images/10_1.png" alt="Services 10">
+              <img src="/images/11_1.png" alt="Services 11">
+              <img src="/images/12_1.png" alt="Services 12">
+              <img src="/images/13_1.png" alt="Services 13">
+            </div>
+            <span class="preview-label"></span>
+          </div>
+          <!-- Our Work -->
+          <div class="preview-item" id="preview-work">
+            <div class="preview-img-wrap" id="slideshow-work">
+              <img src="/images/1.webp" alt="Work 1" class="active">
+              <img src="/images/2.webp" alt="Work 2">
+              <img src="/images/3.webp" alt="Work 3">
+              <img src="/images/4.webp" alt="Work 4">
+              <img src="/images/5.webp" alt="Work 5">
+              <img src="/images/6.png" alt="Work 6">
+              <img src="/images/7.webp" alt="Work 7">
+              <img src="/images/8.webp" alt="Work 8">
+              <img src="/images/9.webp" alt="Work 9">
+              <img src="/images/10.webp" alt="Work 10">
+              <img src="/images/11.webp" alt="Work 11">
+              <img src="/images/12.webp" alt="Work 12">
+              <img src="/images/13.webp" alt="Work 13">
+              <img src="/images/14.webp" alt="Work 14">
+              <img src="/images/15.webp" alt="Work 15">
+              <img src="/images/16.webp" alt="Work 16">
+              <img src="/images/17.webp" alt="Work 17">
+              <img src="/images/18.webp" alt="Work 18">
+            </div>
+            <span class="preview-label"></span>
+          </div>
+          <!-- Blog -->
+          <div class="preview-item" id="preview-blog">
+            <div class="preview-logo-img">
+              <img src="/images/group-c-logo.svg" alt="Blogs">
+            </div>
+            <span class="preview-label">Insights, tips &amp; stories from us</span>
+          </div>
+          <!-- Contact -->
+          <div class="preview-item" id="preview-contact">
+            <div class="preview-logo-img">
+              <img src="/images/group-c-logo.svg" alt="Contact">
+            </div>
+            <span class="preview-label">Ready to transform your brand? Get in touch</span>
+          </div>
+          <!-- Careers -->
+          <div class="preview-item" id="preview-careers">
+            <div class="preview-logo-img">
+              <img src="/images/group-c-logo.svg" alt="Careers">
+            </div>
+            <span class="preview-label">Join our team and grow with us</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NAVBAR PILL -->
+    <div class="navbar-wrap">
+      <div class="navbar-pill liquidGlass-wrapper" id="navbarPill">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        <div class="liquidGlass-text" style="width:100%;">
+          <div class="navbar-top">
+            <!-- Col 1: Toggle -->
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+              <div class="toggle-lines">
+                <span></span><span></span><span></span>
+              </div>
+            </button>
+            <!-- Col 2: Logo -->
+            <a href="/" class="nav-logo">
+              <img src="/images/Group-1795.png" alt="Cloutgency">
+            </a>
+            <!-- Col 3: CTA -->
+            <div class="nav-cta-wrap">
+              <a href="/contact-us" class="nav-cta connect-btn" id="navCta">
+                <div class="connect-state-default">
+                  <span class="connect-label-default">Contact Us</span>
+                </div>
+                <div class="connect-hover-fill" id="connectHoverFill">
+                  <span class="connect-label-hover">Contact Us</span>
+                  <div class="connect-icon-wrap">
+                    <canvas id="nav-morph-canvas" width="64" height="64"></canvas>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NAVBAR STYLES -->
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --yellow: #f5c300;
+        --black: #111111;
+        --hover-bg: #fff8db;
+        --lh: 80px;
+        --fs: clamp(36px, 5.5vw, 62px);
+      }
+      .liquidGlass-wrapper { position: relative; overflow: hidden; box-shadow: 0 8px 16px rgba(0,0,0,0.18), 0 0 32px rgba(0,0,0,0.10); }
+      .liquidGlass-effect { position: absolute; z-index: 0; inset: 0; backdrop-filter: blur(3px); filter: url(#glass-distortion); overflow: hidden; isolation: isolate; border-radius: inherit; }
+      .liquidGlass-tint { position: absolute; z-index: 1; inset: 0; background: rgba(255,255,255,0.18); border-radius: inherit; }
+      .liquidGlass-shine { position: absolute; inset: 0; z-index: 2; overflow: hidden; border-radius: inherit; box-shadow: inset 2px 2px 1px 0 rgba(255,255,255,0.55), inset -1px -1px 1px 1px rgba(255,255,255,0.35); }
+      .liquidGlass-text { position: relative; z-index: 3; }
+      .navbar-wrap { position: fixed; top: 0; left: 0; right: 0; z-index: 300; padding: 12px 16px; padding-top: max(12px, env(safe-area-inset-top)); }
+      .navbar-pill { border-radius: 50px; }
+      .navbar-top { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 16px; min-height: 72px; width: 100%; }
+      .nav-toggle { display: flex; align-items: center; justify-content: center; cursor: pointer; background: none; border: none; outline: none; width: 40px; height: 40px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; position: relative; z-index: 5; justify-self: start; }
+      .toggle-lines { display: flex; flex-direction: column; gap: 5px; align-items: center; justify-content: center; }
+      .toggle-lines span { display: block; width: 22px; height: 2.5px; background: rgba(255,255,255,0.92); border-radius: 2px; transform-origin: center; transition: transform 0.36s cubic-bezier(.77,0,.18,1), opacity 0.22s, width 0.25s; }
+      .nav-toggle.open .toggle-lines span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+      .nav-toggle.open .toggle-lines span:nth-child(2) { opacity: 0; width: 0; }
+      .nav-toggle.open .toggle-lines span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+      .nav-logo { display: flex; align-items: center; gap: 0px; text-decoration: none; justify-self: center; }
+      .nav-logo img { width: 28px; height: 28px; object-fit: contain; display: block; }
+      .nav-logo-name { font-family: 'Lufga', sans-serif; font-weight: 700; font-size: 15px; color: rgba(255,255,255,0.95); letter-spacing: -0.01em; }
+      .nav-cta-wrap { justify-self: end; display: flex; align-items: center; }
+      .nav-cta { font-family: 'Lufga', sans-serif; font-weight: 700; font-size: 13px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; position: relative; white-space: nowrap; text-decoration: none; background: var(--yellow); border: none; -webkit-tap-highlight-color: transparent; }
+      .nav-cta.connect-btn { height: 48px; min-width: 160px; padding: 0; }
+      .connect-state-default { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 0 24px; pointer-events: none; }
+      .connect-label-default { font-family: 'Lufga', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; color: var(--black); white-space: nowrap; }
+      .connect-hover-fill { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--hover-bg); border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 20px 0 24px; z-index: 2; transform: translateX(100%); transition: transform 0.52s cubic-bezier(.77,0,.18,1); pointer-events: none; overflow: hidden; }
+      .nav-cta.connect-btn:hover .connect-hover-fill { transform: translateX(0%); }
+      .connect-label-hover { font-family: 'Lufga', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; color: var(--black); white-space: nowrap; transform: translateX(16px); transition: transform 0.52s cubic-bezier(.77,0,.18,1); }
+      .nav-cta.connect-btn:hover .connect-label-hover { transform: translateX(0); }
+      .connect-icon-wrap { width: 32px; height: 32px; flex-shrink: 0; position: relative; }
+      .connect-icon-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .nav-overlay { position: fixed; inset: 0; z-index: 200; background: var(--yellow); clip-path: circle(0% at 34px 39px); transition: clip-path 0.68s cubic-bezier(.77,0,.18,1); pointer-events: none; overflow: hidden; }
+      .nav-overlay.open { clip-path: circle(160% at 34px 39px); pointer-events: all; }
+      .nav-overlay-inner { position: absolute; inset: 0; display: flex; align-items: center; padding: 80px 64px 48px 64px; }
+      .nav-links { flex: 1; display: flex; flex-direction: column; list-style: none; align-self: flex-start; margin-top: 24px; }
+      .nav-links li { opacity: 0; transform: translateY(24px); transition: opacity 0.38s ease, transform 0.44s cubic-bezier(.34,1.4,.64,1); }
+      .nav-overlay.open .nav-links li:nth-child(1) { opacity:1; transform:none; transition-delay:.18s; }
+      .nav-overlay.open .nav-links li:nth-child(2) { opacity:1; transform:none; transition-delay:.25s; }
+      .nav-overlay.open .nav-links li:nth-child(3) { opacity:1; transform:none; transition-delay:.32s; }
+      .nav-overlay.open .nav-links li:nth-child(4) { opacity:1; transform:none; transition-delay:.39s; }
+      .nav-overlay.open .nav-links li:nth-child(5) { opacity:1; transform:none; transition-delay:.46s; }
+      .nav-link-clip { display: block; height: var(--lh); overflow: hidden; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+      .nav-link-track { display: flex; flex-direction: column; height: calc(var(--lh) * 2); transform: translateY(0); transition: transform 0.52s cubic-bezier(.77,0,.18,1); }
+      .nav-links li:hover .nav-link-track, .nav-links li.touch-active .nav-link-track { transform: translateY(calc(var(--lh) * -1)); }
+      .t-solid, .t-stroke { display: flex; align-items: center; height: var(--lh); font-family: 'Lufga', sans-serif; font-size: var(--fs); font-weight: 800; letter-spacing: -0.035em; line-height: 1; flex-shrink: 0; }
+      .t-solid { color: var(--black); }
+      .t-stroke { color: transparent; -webkit-text-fill-color: transparent; -webkit-text-stroke: 2px rgba(0,0,0,0.55); }
+      .nav-preview-area { width: 260px; flex-shrink: 0; display: flex; align-items: center; justify-content: flex-start; align-self: center; position: relative; height: 320px; }
+      .preview-item { position: absolute; top: 50%; left: 0; transform: translateY(-50%) scale(0.92); opacity: 0; transition: opacity 0.26s ease, transform 0.32s cubic-bezier(.34,1.4,.64,1), visibility 0.26s ease; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; width: 100%; visibility: hidden; }
+      .preview-item.visible { opacity: 1; transform: translateY(-50%) scale(1); visibility: visible; }
+      .preview-logo-img { width: 200px; height: 200px; border-radius: 14px; overflow: hidden; aspect-ratio: 1; flex-shrink: 0; }
+      .preview-logo-img img { width: 100%; height: 100%; object-fit: cover; display: block; object-position: center; }
+      .preview-img-wrap { width: 240px; height: 200px; border-radius: 14px; overflow: hidden; flex-shrink: 0; position: relative; aspect-ratio: 6 / 5; }
+      .preview-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; top: 0; left: 0; object-position: center; opacity: 0; transition: opacity 0.7s ease; will-change: opacity; }
+      .preview-img-wrap img.active { opacity: 1; }
+      .preview-img-caption { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.52); color: #fff; font-family: 'Lufga', sans-serif; font-weight: 700; font-size: 15px; padding: 10px 14px; letter-spacing: -0.01em; z-index: 2; }
+      .preview-label { font-family: 'Lufga', sans-serif; font-size: 13px; font-weight: 600; color: rgba(0,0,0,0.75); line-height: 1.4; margin-top: 8px; }
+      .ripple { position: fixed; border-radius: 50%; pointer-events: none; z-index: 9999; transform: scale(0); animation: rippleExpand 0.7s cubic-bezier(.22,.61,.36,1) forwards; }
+      @keyframes rippleExpand { 0% { transform: scale(0); opacity: 0.4; } 100% { transform: scale(5); opacity: 0; } }
+      @media (max-width: 640px) {
+        :root { --lh: 64px; --fs: clamp(30px, 9vw, 44px); }
+        .navbar-wrap { padding: 10px 12px; padding-top: max(10px, env(safe-area-inset-top)); }
+        .navbar-top { display: flex; align-items: center; justify-content: space-between; position: relative; padding: 0 14px; min-height: 60px; grid-template-columns: unset; }
+        .nav-logo { position: absolute; left: 55%; transform: translateX(-50%); justify-self: unset; max-width: calc(100% - 180px); }
+        .nav-toggle { width: 38px; height: 38px; flex-shrink: 0; position: relative; z-index: 5; }
+        .nav-cta-wrap { justify-self: unset; flex-shrink: 0; }
+        .nav-cta.connect-btn { height: 36px; min-width: 0; padding: 0; }
+        .connect-state-default { padding: 0 14px; }
+        .connect-label-default { font-size: 12px; }
+        .connect-hover-fill { display: none; }
+        .nav-overlay-inner { flex-direction: column; padding: 76px 28px 32px; align-items: flex-start; gap: 28px; position: relative; }
+        .nav-links { margin-top: 0; }
+        .nav-preview-area { position: absolute; top: 60vh; left: 50%; transform: translateX(-50%); width: 90vw; max-width: 340px; height: auto; display: flex; justify-content: center; align-items: center; }
+        .preview-item { position: absolute; top: 0; left: 50%; transform: translateX(-50%) scale(0.95); transform-origin: center; opacity: 0; visibility: hidden; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+        .preview-item.visible { transform: translateX(-50%) scale(1); opacity: 1; visibility: visible; pointer-events: auto; }
+        .preview-logo-img { width: 100%; max-width: 180px; height: 180px; min-width: 140px; }
+        .preview-img-wrap { width: 100%; max-width: 280px; height: auto; aspect-ratio: 6 / 5; min-height: 160px; }
+        .preview-label { font-size: 13px; font-weight: 600; text-align: center; max-width: calc(90vw - 32px); width: 100%; margin-top: 14px; color: rgba(0,0,0,0.85); word-wrap: break-word; line-height: 1.6; white-space: normal; word-break: normal; padding: 0 16px; }
+      }
+      @media (min-width: 641px) and (max-width: 900px) {
+        :root { --lh: 72px; --fs: clamp(34px, 5.5vw, 50px); }
+        .nav-overlay-inner { padding: 80px 40px 40px; position: relative; }
+        .nav-preview-area { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); width: auto; }
+        .preview-item { position: absolute; top: 50%; left: 0; transform: translateY(-50%) scale(0.92); }
+        .preview-item.visible { transform: translateY(-50%) scale(1); }
+        .preview-logo-img { width: 160px; height: 160px; min-width: 160px; }
+        .preview-img-wrap { width: 210px; height: 180px; min-width: 210px; }
+      }
+    </style>
+
+    <!-- NAVBAR JAVASCRIPT -->
+    <script>
+      /* ── Navbar toggle ── */
+      const navToggle  = document.getElementById('navToggle');
+      const navOverlay = document.getElementById('navOverlay');
+      const navItems   = document.querySelectorAll('.nav-links li');
+      let isOpen = false;
+      const isTouch = () => window.matchMedia('(hover: none)').matches;
+
+      /* ── Canvas morph ── */
+      const navCanvas = document.getElementById('nav-morph-canvas');
+      const navCtx    = navCanvas.getContext('2d');
+      const dpr       = window.devicePixelRatio || 1;
+      const isMobile  = window.innerWidth <= 640;
+      const canvasSize = isMobile ? 18 : 32;
+      navCanvas.width  = canvasSize * dpr;
+      navCanvas.height = canvasSize * dpr;
+      navCanvas.style.width  = canvasSize + 'px';
+      navCanvas.style.height = canvasSize + 'px';
+      navCtx.scale(dpr, dpr);
+      const OUTER_CIRCLE = "M78.9441 157.888C122.544 157.888 157.888 122.544 157.888 78.9441C157.888 35.3445 122.544 0 78.9441 0C35.3445 0 0 35.3445 0 78.9441C0 122.544 35.3445 157.888 78.9441 157.888Z";
+      const OUTER_HEART  = "M79 142C20 112 0 74 0 52C0 26 20 8 45 8C60 8 72 18 79 30C86 18 98 8 113 8C138 8 158 26 158 52C158 74 138 112 79 142Z";
+      const INNER_C      = "M102.199 86.1312H137.839C136.006 101.073 128.543 114.753 116.97 124.38C105.398 134.007 90.5881 138.856 75.5625 137.939C60.537 137.021 46.4277 130.405 36.1128 119.441C25.7979 108.477 20.0547 93.9905 20.0547 78.937C20.0547 63.8834 25.7979 49.397 36.1128 38.4329C46.4277 27.4687 60.537 20.853 75.5625 19.9352C90.5881 19.0175 105.398 23.8668 116.97 33.4941C128.543 43.1213 136.006 56.8011 137.839 71.7427H102.199C100.479 66.2388 96.8441 61.5332 91.9531 58.4789C87.0621 55.4245 81.2387 54.2234 75.5384 55.0933C69.838 55.9633 64.6379 58.8466 60.8806 63.2208C57.1233 67.595 55.0575 73.1706 55.0575 78.937C55.0575 84.7033 57.1233 90.2789 60.8806 94.6531C64.6379 99.0272 69.838 101.911 75.5384 102.781C81.2387 103.65 87.0621 102.449 91.9531 99.395C96.8441 96.3406 100.479 91.6351 102.199 86.1312Z";
+      const INNER_HEART  = "M79 118C48 100 28 76 28 58C28 42 40 35 55 35C65 35 74 42 79 52C84 42 93 35 103 35C118 35 130 42 130 58C130 76 110 100 79 118Z";
+      let navInterps = null, navAnimId = null, navAnimStart = null, navHoverTimeout = null;
+      const NAV_DURATION = 600, NAV_SCALE = 158, NAV_W = canvasSize, NAV_H = canvasSize;
+      function buildNavInterps() {
+        const opts = { maxSegmentLength: 1 };
+        navInterps = {
+          fwd: { outer: flubber.interpolate(OUTER_CIRCLE, OUTER_HEART, opts), inner: flubber.interpolate(INNER_C, INNER_HEART, opts) },
+          bwd: { outer: flubber.interpolate(OUTER_HEART, OUTER_CIRCLE, opts), inner: flubber.interpolate(INNER_HEART, INNER_C, opts) }
+        };
+      }
+      function drawNavShape(outerD, innerD) {
+        navCtx.clearRect(0, 0, NAV_W * dpr, NAV_H * dpr);
+        navCtx.save();
+        navCtx.scale(NAV_W / NAV_SCALE, NAV_H / NAV_SCALE);
+        navCtx.fillStyle = '#f5c300';
+        navCtx.fill(new Path2D(outerD), 'evenodd');
+        navCtx.fillStyle = '#111111';
+        navCtx.fill(new Path2D(innerD), 'evenodd');
+        navCtx.restore();
+      }
+      drawNavShape(OUTER_CIRCLE, INNER_C);
+      function runNavMorph(toHeart) {
+        if (!navInterps) buildNavInterps();
+        if (navAnimId) cancelAnimationFrame(navAnimId);
+        navAnimStart = null;
+        const dir = toHeart ? navInterps.fwd : navInterps.bwd;
+        function frame(now) {
+          if (!navAnimStart) navAnimStart = now;
+          const raw = Math.min((now - navAnimStart) / NAV_DURATION, 1);
+          const t = raw < 0.5 ? 4*raw*raw*raw : 1 - Math.pow(-2*raw+2,3)/2;
+          drawNavShape(dir.outer(t), dir.inner(t));
+          if (raw < 1) navAnimId = requestAnimationFrame(frame);
+          else navAnimId = null;
+        }
+        navAnimId = requestAnimationFrame(frame);
+      }
+      const navCta = document.getElementById('navCta');
+      navCta.addEventListener('mouseenter', () => { if (isTouch()) return; navHoverTimeout = setTimeout(() => runNavMorph(true), 300); });
+      navCta.addEventListener('mouseleave', () => { if (isTouch()) return; if (navHoverTimeout) { clearTimeout(navHoverTimeout); navHoverTimeout = null; } runNavMorph(false); });
+
+      /* ── Slideshows ── */
+      const slideshows = {
+        services: { el: document.getElementById('slideshow-services'), idx: 0, timer: null },
+        work:     { el: document.getElementById('slideshow-work'),     idx: 0, timer: null }
+      };
+      function advanceSlide(key) {
+        const s = slideshows[key]; if (!s.el) return;
+        const imgs = s.el.querySelectorAll('img');
+        imgs[s.idx].classList.remove('active');
+        s.idx = (s.idx + 1) % imgs.length;
+        imgs[s.idx].classList.add('active');
+      }
+      function startSlideshow(key) { if (slideshows[key].timer) return; slideshows[key].timer = setInterval(() => advanceSlide(key), 1800); }
+      function stopSlideshow(key)  { clearInterval(slideshows[key].timer); slideshows[key].timer = null; }
+
+      /* ── Ripple ── */
+      function spawnRipple(x, y) {
+        const el = document.createElement('div');
+        el.className = 'ripple';
+        const s = 100;
+        el.style.cssText = `width:${s}px;height:${s}px;left:${x-s/2}px;top:${y-s/2}px;background:radial-gradient(circle,rgba(255,255,255,0.5) 0%,transparent 70%);`;
+        document.body.appendChild(el);
+        el.addEventListener('animationend', () => el.remove());
+      }
+
+      /* ── Toggle ── */
+      navToggle.addEventListener('click', e => {
+        const r = navToggle.getBoundingClientRect();
+        spawnRipple(r.left + r.width/2, r.top + r.height/2);
+        isOpen = !isOpen;
+        navToggle.classList.toggle('open', isOpen);
+        navOverlay.classList.toggle('open', isOpen);
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+        if (!isOpen) { hideAll(); clearActive(); }
+      });
+      navCta.addEventListener('click', e => spawnRipple(e.clientX, e.clientY));
+
+      /* ── Preview ── */
+      function showPreview(key) {
+        hideAll();
+        const el = document.getElementById('preview-' + key);
+        if (el) requestAnimationFrame(() => el.classList.add('visible'));
+        if (slideshows[key]) startSlideshow(key);
+      }
+      function hideAll() { document.querySelectorAll('.preview-item').forEach(el => el.classList.remove('visible')); Object.keys(slideshows).forEach(k => stopSlideshow(k)); }
+      function clearActive() { navItems.forEach(i => i.classList.remove('touch-active')); }
+
+      navItems.forEach(item => {
+        const key = item.dataset.preview;
+        item.addEventListener('mouseenter', () => { if (!isTouch()) showPreview(key); });
+        item.addEventListener('mouseleave', () => { if (!isTouch()) hideAll(); });
+        item.addEventListener('touchstart', () => { clearActive(); item.classList.add('touch-active'); showPreview(key); }, { passive: true });
+        item.addEventListener('touchend', () => { setTimeout(() => item.classList.remove('touch-active'), 400); });
+        item.querySelector('a').addEventListener('click', () => {
+          isOpen = false;
+          navToggle.classList.remove('open');
+          navOverlay.classList.remove('open');
+          document.body.style.overflow = '';
+          hideAll(); clearActive();
+        });
+      });
+      document.addEventListener('touchstart', e => {
+        if (isOpen && !navOverlay.contains(e.target) && !navToggle.contains(e.target)) {
+          isOpen = false; navToggle.classList.remove('open'); navOverlay.classList.remove('open'); document.body.style.overflow = ''; hideAll(); clearActive();
+        }
+      }, { passive: true });
+    </script>

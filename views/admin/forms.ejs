@@ -1,0 +1,761 @@
+<%- include('layout', {
+  body: `
+  <style>
+    .sub-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 14px;
+    }
+    .sub-tab-btn {
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sub-tab-btn.active {
+      background: var(--gold);
+      color: #000;
+      border-color: var(--gold);
+      box-shadow: 0 4px 16px var(--gold-glow);
+    }
+    .sub-tab-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .sub-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .sub-table th {
+      padding: 16px 20px;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .sub-table td {
+      padding: 16px 20px;
+      font-size: 13.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #ddd;
+      vertical-align: middle;
+    }
+    .sub-table tbody tr {
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .sub-table tbody tr:hover td {
+      background: rgba(255, 215, 0, 0.04);
+    }
+    .sub-table tbody tr:hover td:first-child {
+      border-left: 3px solid var(--gold);
+    }
+
+    .btn-view-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(255, 215, 0, 0.12);
+      border: 1px solid rgba(255, 215, 0, 0.35);
+      border-radius: 6px;
+      color: var(--gold);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-view-action:hover {
+      background: var(--gold);
+      color: #000;
+      border-color: var(--gold);
+      box-shadow: 0 2px 10px rgba(255, 215, 0, 0.35);
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-pill.gold {
+      background: rgba(255, 215, 0, 0.15);
+      color: var(--gold);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+    .badge-pill.blue {
+      background: rgba(77, 163, 255, 0.15);
+      color: #79b8ff;
+      border: 1px solid rgba(77, 163, 255, 0.3);
+    }
+    .badge-pill.green {
+      background: rgba(46, 204, 113, 0.15);
+      color: #2ecc71;
+      border: 1px solid rgba(46, 204, 113, 0.3);
+    }
+
+    /* Modal Styles */
+    .inquiry-modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      background: rgba(5, 5, 8, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .inquiry-modal-backdrop.open {
+      display: flex;
+      opacity: 1;
+    }
+    .inquiry-modal-box {
+      width: 100%;
+      max-width: 760px;
+      max-height: 90vh;
+      background: #111016;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 16px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(20px) scale(0.98);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .inquiry-modal-backdrop.open .inquiry-modal-box {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.35);
+    }
+    .modal-hdr-left {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .modal-hdr-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+    }
+    .modal-close-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .modal-close-btn:hover {
+      background: rgba(255, 59, 48, 0.2);
+      border-color: rgba(255, 59, 48, 0.5);
+      color: #ff453a;
+    }
+
+    .modal-body {
+      padding: 26px 28px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .detail-card {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .detail-card-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+    }
+    .detail-card-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      word-break: break-word;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .copy-icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s ease;
+    }
+    .copy-icon-btn:hover {
+      color: var(--gold);
+    }
+
+    .link-action-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: rgba(255, 215, 0, 0.12);
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      border-radius: 8px;
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .link-action-pill:hover {
+      background: var(--gold);
+      color: #000;
+      box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+    }
+
+    .message-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .message-box-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--gold);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 8px;
+    }
+    .message-box-content {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: #e5e5e5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .modal-ftr {
+      padding: 18px 28px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .modal-ftr-left {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-modal-action {
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn-modal-primary {
+      background: var(--gold);
+      color: #000;
+      border: 1px solid var(--gold);
+    }
+    .btn-modal-primary:hover {
+      box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-modal-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .btn-modal-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .copy-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--gold);
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 13px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      z-index: 1000000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    .copy-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+
+  <div class="sub-tabs">
+    <button type="button" class="sub-tab-btn active" onclick="switchTab('contact')">
+      <span>✉ Contact Inquiries (${submissions.contact ? submissions.contact.length : 0})</span>
+    </button>
+    <button type="button" class="sub-tab-btn" onclick="switchTab('career')">
+      <span>💼 Career Applications (${submissions.careers ? submissions.careers.length : 0})</span>
+    </button>
+  </div>
+
+  <!-- Contact Inquiries Table -->
+  <div id="contactTableWrap" class="table-container">
+    <table class="sub-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Company</th>
+          <th>Service</th>
+          <th>Message Preview</th>
+          <th>Date</th>
+          <th style="text-align:right;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${(submissions.contact && submissions.contact.length > 0)
+          ? submissions.contact.map((c, idx) => `
+              <tr onclick="viewContactInquiry(${idx})">
+                <td style="font-weight:700; color:#fff;">
+                  <span style="display:inline-flex; align-items:center; gap:8px;">
+                    <span style="width:28px; height:28px; border-radius:50%; background:rgba(255,215,0,0.15); color:var(--gold); display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:800;">
+                      ${(c.name || 'U').charAt(0).toUpperCase()}
+                    </span>
+                    ${c.name}
+                  </span>
+                </td>
+                <td><a href="mailto:${c.email}" onclick="event.stopPropagation();" style="color:var(--gold); text-decoration:none;">${c.email}</a></td>
+                <td>${c.phone || '—'}</td>
+                <td>${c.company || '—'}</td>
+                <td><span class="badge-pill gold">${c.service || 'General'}</span></td>
+                <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#bbb;">
+                  ${c.message || '—'}
+                </td>
+                <td style="font-size:12px; color:var(--text-dim); white-space:nowrap;">
+                  ${new Date(c.created_at || c.createdAt).toLocaleString()}
+                </td>
+                <td style="text-align:right; white-space:nowrap;">
+                  <button type="button" class="btn-view-action" onclick="event.stopPropagation(); viewContactInquiry(${idx})">
+                    View 👁
+                  </button>
+                </td>
+              </tr>
+            `).join('')
+          : '<tr><td colspan="8" style="text-align:center; padding:48px; color:var(--text-dim);">No contact inquiries logged yet.</td></tr>'
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Career Applications Table -->
+  <div id="careerTableWrap" class="table-container" style="display:none;">
+    <table class="sub-table">
+      <thead>
+        <tr>
+          <th>Applicant</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Role Applied</th>
+          <th>Resume / Portfolio</th>
+          <th>Onsite</th>
+          <th>Date</th>
+          <th style="text-align:right;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${(submissions.careers && submissions.careers.length > 0)
+          ? submissions.careers.map((a, idx) => `
+              <tr onclick="viewCareerApplication(${idx})">
+                <td style="font-weight:700; color:#fff;">
+                  <span style="display:inline-flex; align-items:center; gap:8px;">
+                    <span style="width:28px; height:28px; border-radius:50%; background:rgba(121,184,255,0.15); color:#79b8ff; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:800;">
+                      ${(a.name || 'A').charAt(0).toUpperCase()}
+                    </span>
+                    ${a.name}
+                  </span>
+                </td>
+                <td><a href="mailto:${a.email}" onclick="event.stopPropagation();" style="color:var(--gold); text-decoration:none;">${a.email}</a></td>
+                <td>${a.phone || '—'}</td>
+                <td><span class="badge-pill gold">${a.role || 'Applicant'}</span></td>
+                <td onclick="event.stopPropagation();">
+                  <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    ${(a.resume || a.portfolio)
+                      ? '<a href="' + (a.resume || a.portfolio) + '" target="_blank" rel="noopener noreferrer" style="color:#8ab4f8; text-decoration:none; font-size:12px; font-weight:700; background:rgba(138,180,248,0.1); padding:4px 8px; border-radius:4px; border:1px solid rgba(138,180,248,0.3);">Link ↗</a>'
+                      : '—'
+                    }
+                  </div>
+                </td>
+                <td>
+                  <span class="badge-pill ${String(a.onsite).toLowerCase() === 'no' ? 'blue' : 'green'}">
+                    ${a.onsite || 'Yes'}
+                  </span>
+                </td>
+                <td style="font-size:12px; color:var(--text-dim); white-space:nowrap;">
+                  ${new Date(a.created_at || a.createdAt).toLocaleString()}
+                </td>
+                <td style="text-align:right; white-space:nowrap;">
+                  <button type="button" class="btn-view-action" onclick="event.stopPropagation(); viewCareerApplication(${idx})">
+                    View 👁
+                  </button>
+                </td>
+              </tr>
+            `).join('')
+          : '<tr><td colspan="8" style="text-align:center; padding:48px; color:var(--text-dim);">No job applications logged yet.</td></tr>'
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Inquiry Details Modal -->
+  <div id="inquiryModal" class="inquiry-modal-backdrop" onclick="handleBackdropClick(event)">
+    <div class="inquiry-modal-box" onclick="event.stopPropagation()">
+      <div class="modal-hdr">
+        <div class="modal-hdr-left">
+          <span id="modalCategoryBadge" class="badge-pill gold">INQUIRY</span>
+          <h3 id="modalApplicantName" class="modal-hdr-title">—</h3>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeInquiryModal()" title="Close (Esc)">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div id="modalDetailsGrid" class="details-grid">
+          <!-- Filled dynamically -->
+        </div>
+
+        <div id="modalLinksSection" style="display:none; flex-direction:column; gap:10px;">
+          <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-dim);">
+            Attached Links & Portfolios
+          </div>
+          <div id="modalLinksContainer" style="display:flex; gap:12px; flex-wrap:wrap;"></div>
+        </div>
+
+        <div class="message-box">
+          <div class="message-box-hdr">
+            <span id="modalMessageLabel">Message / Cover Note</span>
+            <button type="button" class="btn-view-action" style="padding:3px 10px; font-size:11px;" onclick="copyCurrentMessage()">
+              Copy Text 📋
+            </button>
+          </div>
+          <div id="modalMessageContent" class="message-box-content">—</div>
+        </div>
+      </div>
+
+      <div class="modal-ftr">
+        <div class="modal-ftr-left">
+          <a id="modalMailBtn" href="#" class="btn-modal-action btn-modal-primary">
+            Reply via Email ✉
+          </a>
+          <button type="button" class="btn-modal-action btn-modal-secondary" onclick="copyFullDetails()">
+            Copy All Info 📋
+          </button>
+        </div>
+        <button type="button" class="btn-modal-action btn-modal-secondary" onclick="closeInquiryModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="copyToast" class="copy-toast">Copied to clipboard!</div>
+
+  <script id="formsSubmissionsData" type="application/json">
+${JSON.stringify(submissions || { contact: [], careers: [] }).replace(/</g, '\\u003c')}
+  </script>
+
+  <script>
+    var submissionsData = JSON.parse(document.getElementById('formsSubmissionsData').textContent || '{"contact":[],"careers":[]}');
+    var currentActiveRecord = null;
+
+    function switchTab(type) {
+      document.querySelectorAll('.sub-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      event.currentTarget.classList.add('active');
+      if (type === 'contact') {
+        document.getElementById('contactTableWrap').style.display = 'block';
+        document.getElementById('careerTableWrap').style.display = 'none';
+      } else {
+        document.getElementById('contactTableWrap').style.display = 'none';
+        document.getElementById('careerTableWrap').style.display = 'block';
+      }
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById('copyToast');
+      toast.textContent = msg || 'Copied to clipboard!';
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 2200);
+    }
+
+    function copyText(text) {
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(function() {
+        showToast('Copied: ' + text);
+      }).catch(function() {
+        showToast('Failed to copy');
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function viewContactInquiry(index) {
+      var item = (submissionsData.contact || [])[index];
+      if (!item) return;
+      currentActiveRecord = Object.assign({}, item, { _type: 'contact' });
+
+      document.getElementById('modalCategoryBadge').textContent = 'CONTACT INQUIRY';
+      document.getElementById('modalCategoryBadge').className = 'badge-pill gold';
+      document.getElementById('modalApplicantName').textContent = item.name || 'Anonymous';
+      document.getElementById('modalMessageLabel').textContent = 'Client Inquiry Message';
+      document.getElementById('modalMessageContent').textContent = item.message || '(No message provided)';
+
+      var dateStr = new Date(item.created_at || item.createdAt).toLocaleString();
+      var grid = document.getElementById('modalDetailsGrid');
+      grid.innerHTML =
+        '<div class="detail-card">' +
+          '<span class="detail-card-label">Email Address</span>' +
+          '<span class="detail-card-value">' +
+            '<a href="mailto:' + encodeURIComponent(item.email || '') + '" style="color:var(--gold); text-decoration:none;">' + escapeHtml(item.email) + '</a>' +
+            '<button type="button" class="copy-icon-btn" onclick="copyText(\\'' + escapeHtml(item.email) + '\\')" title="Copy Email">📋</button>' +
+          '</span>' +
+        '</div>' +
+        '<div class="detail-card">' +
+          '<span class="detail-card-label">Phone Number</span>' +
+          '<span class="detail-card-value">' +
+            '<span>' + escapeHtml(item.phone || '—') + '</span>' +
+            (item.phone ? '<button type="button" class="copy-icon-btn" onclick="copyText(\\'' + escapeHtml(item.phone) + '\\')" title="Copy Phone">📋</button>' : '') +
+          '</span>' +
+        '</div>' +
+        '<div class="detail-card">' +
+          '<span class="detail-card-label">Company / Brand</span>' +
+          '<span class="detail-card-value"><span>' + escapeHtml(item.company || '—') + '</span></span>' +
+        '</div>' +
+        '<div class="detail-card">' +
+          '<span class="detail-card-label">Requested Service</span>' +
+          '<span class="detail-card-value"><span style="color:var(--gold);">' + escapeHtml(item.service || 'General') + '</span></span>' +
+        '</div>' +
+        (item.budget ? (
+          '<div class="detail-card">' +
+            '<span class="detail-card-label">Estimated Budget</span>' +
+            '<span class="detail-card-value"><span>' + escapeHtml(item.budget) + '</span></span>' +
+          '</div>'
+        ) : '') +
+        '<div class="detail-card">' +
+          '<span class="detail-card-label">Submitted On</span>' +
+          '<span class="detail-card-value" style="font-size:12.5px; color:var(--text-dim);">' + dateStr + '</span>' +
+        '</div>';
+
+      document.getElementById('modalLinksSection').style.display = 'none';
+      document.getElementById('modalMailBtn').href = 'mailto:' + encodeURIComponent(item.email) + '?subject=' + encodeURIComponent('Re: Inquiry with Cloutgency - ' + (item.service || ''));
+
+      openModal();
+    }
+
+    function viewCareerApplication(index) {
+      var item = (submissionsData.careers || [])[index];
+      if (!item) return;
+      currentActiveRecord = Object.assign({}, item, { _type: 'career' });
+
+      document.getElementById('modalCategoryBadge').textContent = 'CAREER APPLICATION';
+      document.getElementById('modalCategoryBadge').className = 'badge-pill blue';
+      document.getElementById('modalApplicantName').textContent = item.name || 'Anonymous Applicant';
+      document.getElementById('modalMessageLabel').textContent = 'Cover Letter / Bio';
+      document.getElementById('modalMessageContent').textContent = item.message || '(No cover letter provided)';
+
+      var dateStr = new Date(item.created_at || item.createdAt).toLocaleString();
+      var onsiteBadgeClass = String(item.onsite).toLowerCase() === 'no' ? 'blue' : 'green';
+      var grid = document.getElementById('modalDetailsGrid');
+      grid.innerHTML =
+        '<div class="detail-card">' +
+          '<span class="detail-card-label">Applicant Email</span>' +
+          '<span class="detail-card-value">' +
+            '<a href="mailto:' + encodeURIComponent(item.email || '') + '" style="color:var(--gold); text-decoration:none;">' + escapeHtml(item.email) + '</a>' +
+            '<button type="button" class="copy-icon-btn" onclick="copyText(\\'' + escapeHtml(item.email) + '\\')" title="Copy Email">📋</button>' +
+          '</span>' +
+        '</div>' +
+        '<div class="detail-card">' +
+          '<span class="detail-card-label">Phone Number</span>' +
+          '<span class="detail-card-value">' +
+            '<span>' + escapeHtml(item.phone || '—') + '</span>' +
+            (item.phone ? '<button type="button" class="copy-icon-btn" onclick="copyText(\\'' + escapeHtml(item.phone) + '\\')" title="Copy Phone">📋</button>' : '') +
+          '</span>' +
+        '</div>' +
+        '<div class="detail-card">' +
+          '<span class="detail-card-label">Role Applied For</span>' +
+          '<span class="detail-card-value"><span style="color:var(--gold); font-weight:800;">' + escapeHtml(item.role || '—') + '</span></span>' +
+        '</div>' +
+        '<div class="detail-card">' +
+          '<span class="detail-card-label">Onsite in Chennai</span>' +
+          '<span class="detail-card-value">' +
+            '<span class="badge-pill ' + onsiteBadgeClass + '">' + escapeHtml(item.onsite || 'Yes') + '</span>' +
+          '</span>' +
+        '</div>' +
+        '<div class="detail-card">' +
+          '<span class="detail-card-label">Submitted On</span>' +
+          '<span class="detail-card-value" style="font-size:12.5px; color:var(--text-dim);">' + dateStr + '</span>' +
+        '</div>';
+
+      var linksContainer = document.getElementById('modalLinksContainer');
+      linksContainer.innerHTML = '';
+      var hasLinks = false;
+
+      if (item.resume) {
+        hasLinks = true;
+        linksContainer.innerHTML +=
+          '<a href="' + escapeHtml(item.resume) + '" target="_blank" rel="noopener noreferrer" class="link-action-pill">' +
+            '📄 Open Resume Link ↗' +
+          '</a>';
+      }
+      if (item.portfolio) {
+        hasLinks = true;
+        linksContainer.innerHTML +=
+          '<a href="' + escapeHtml(item.portfolio) + '" target="_blank" rel="noopener noreferrer" class="link-action-pill">' +
+            '🌐 Open Portfolio Link ↗' +
+          '</a>';
+      }
+      if (item.linkedin) {
+        hasLinks = true;
+        linksContainer.innerHTML +=
+          '<a href="' + escapeHtml(item.linkedin) + '" target="_blank" rel="noopener noreferrer" class="link-action-pill" style="border-color:rgba(121,184,255,0.4); color:#79b8ff; background:rgba(121,184,255,0.1);">' +
+            '💼 LinkedIn Profile ↗' +
+          '</a>';
+      }
+
+      document.getElementById('modalLinksSection').style.display = hasLinks ? 'flex' : 'none';
+      document.getElementById('modalMailBtn').href = 'mailto:' + encodeURIComponent(item.email) + '?subject=' + encodeURIComponent('Cloutgency Application: ' + (item.role || 'Career Opportunity'));
+
+      openModal();
+    }
+
+    function openModal() {
+      var modal = document.getElementById('inquiryModal');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeInquiryModal() {
+      var modal = document.getElementById('inquiryModal');
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+      currentActiveRecord = null;
+    }
+
+    function handleBackdropClick(e) {
+      if (e.target.id === 'inquiryModal') {
+        closeInquiryModal();
+      }
+    }
+
+    function copyCurrentMessage() {
+      if (!currentActiveRecord) return;
+      copyText(currentActiveRecord.message || '');
+    }
+
+    function copyFullDetails() {
+      if (!currentActiveRecord) return;
+      var rec = currentActiveRecord;
+      var text = '';
+      if (rec._type === 'contact') {
+        text = 'CONTACT INQUIRY\\nName: ' + rec.name + '\\nEmail: ' + rec.email + '\\nPhone: ' + (rec.phone || '—') + '\\nCompany: ' + (rec.company || '—') + '\\nService: ' + (rec.service || '—') + '\\nBudget: ' + (rec.budget || '—') + '\\nDate: ' + new Date(rec.created_at || rec.createdAt).toLocaleString() + '\\n\\nMessage:\\n' + (rec.message || '');
+      } else {
+        text = 'CAREER APPLICATION\\nName: ' + rec.name + '\\nEmail: ' + rec.email + '\\nPhone: ' + (rec.phone || '—') + '\\nRole: ' + (rec.role || '—') + '\\nOnsite Chennai: ' + (rec.onsite || 'Yes') + '\\nResume: ' + (rec.resume || '—') + '\\nPortfolio: ' + (rec.portfolio || '—') + '\\nLinkedIn: ' + (rec.linkedin || '—') + '\\nDate: ' + new Date(rec.created_at || rec.createdAt).toLocaleString() + '\\n\\nCover Letter:\\n' + (rec.message || '');
+      }
+      navigator.clipboard.writeText(text).then(function() {
+        showToast('All details copied to clipboard!');
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeInquiryModal();
+      }
+    });
+  </script>
+`}) %>

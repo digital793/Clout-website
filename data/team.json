@@ -1,0 +1,24 @@
+[
+  {
+    "id": "tm_1",
+    "name": "Kowshik",
+    "role": "Founder & Creative Lead",
+    "photo_url": "/images/Layer-2.png",
+    "linkedin": "https://linkedin.com",
+    "instagram": "https://instagram.com",
+    "bio": "Visionary brand builder with over 8 years directing breakthrough cultural campaigns.",
+    "display_order": 1,
+    "is_active": true
+  },
+  {
+    "id": "tm_2",
+    "name": "Naresh",
+    "role": "Lead Architect & Tech Director",
+    "photo_url": "/images/group-c-logo.svg",
+    "linkedin": "https://linkedin.com",
+    "instagram": "https://instagram.com",
+    "bio": "Pioneering high-speed digital infrastructure, modern CMS development, and fluid UI animation.",
+    "display_order": 2,
+    "is_active": true
+  }
+]

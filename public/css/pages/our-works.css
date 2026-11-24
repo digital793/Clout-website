@@ -1,0 +1,92 @@
+/* Webflow IX2 initial-state rules removed - using custom JS animations */
+.invisible { visibility: visible !important; opacity: 1 !important; }
+.home-logo-container, .image-238, .popup-tamplate { visibility: visible !important; }
+
+
+  .tab {
+  position: relative;
+}
+.progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: #ffd600;
+  transition: width 0.2s ease-out;
+}
+  .filter-tab.active {
+    background: #FFD700;
+    color: #000;
+    border-radius: 8px;
+}
+
+.our_work_brand_card_wraper {
+  overflow: hidden;
+}
+
+.Left_card_wrapper_ourwork,
+.Right_Card_Wrapper_ourwork,
+.left_card_wraper_ourwork,
+.right_card_wraper_ourwork {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .Left_card_wrapper_ourwork,
+  .Right_Card_Wrapper_ourwork,
+  .left_card_wraper_ourwork,
+  .right_card_wraper_ourwork {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+
+
+.custom-cursor{
+  position:fixed;
+  top:0;
+  left:0;
+  width:14px;
+  height:14px;
+  background:#FFD600;
+  border-radius:999px;
+  pointer-events:none;
+  z-index:99999;
+  transform:translateY(-50%);
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  white-space:nowrap;
+  transition:
+    width .38s cubic-bezier(.22,1,.36,1),
+    padding .38s cubic-bezier(.22,1,.36,1),
+    opacity .25s ease;
+  will-change:width,padding;
+}
+/* RESPONSIVE CAPSULE */
+.custom-cursor.active{
+  width:auto;
+  padding:18px;
+}
+/* TEXT */
+.cursor-text{
+  color:#000;
+  font-size:14px;
+  font-weight:600;
+  line-height:1;
+  opacity:0;
+  transition:opacity .2s ease;
+}
+/* SHOW TEXT */
+.custom-cursor.active .cursor-text{
+  opacity:1;
+}
+/* MOBILE */
+@media(max-width:991px){
+  .custom-cursor{
+    display:none;
+  }
+}

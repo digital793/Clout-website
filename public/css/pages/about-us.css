@@ -1,0 +1,459 @@
+﻿/* Webflow IX2 initial-state rules removed - using custom JS animations */
+.invisible { visibility: visible !important; opacity: 1 !important; }
+.home-logo-container, .image-238, .popup-tamplate { visibility: visible !important; }
+
+
+:root{
+  --cream: #FFF8DB;
+  --gold:  #FBC800;
+  --bg:    #060505;
+  --tape-h: 50px;
+  --fs: clamp(48px, 6.5vw, 96px);
+}
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   CAUTION TAPE â€” ENTIRE BAND SCROLLS (dots included)
+   Structure:
+   .tape-zone
+     .tape-clip-1  (rotated +4.58Â°, overflow:hidden)
+       .tape-scroll  â† the ONE moving element
+         [.tape-chunk Ã— N Ã— 2]  â† yellow bg + text + dots all inside
+     .tape-clip-2  (rotated -4.58Â°, overflow:hidden)
+       .tape-scroll
+         [.tape-chunk Ã— N Ã— 2]
+   The dots (perforated edges) are INSIDE .tape-chunk
+   so they physically move with the yellow band.
+   They are rendered as a repeating CSS background-image
+   on the top and bottom edge of EACH chunk.
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+.tape-zone{
+  position:absolute;
+  top:auto;
+  left:auto;
+  right:auto;
+  bottom:0%;
+  height:0;
+  z-index:10;
+  pointer-events:none;
+}
+  @media (max-width: 767px) {
+  .tape-zone {
+    bottom: 0%;
+  }
+}
+/* Rotated clip window â€” just clips, no background */
+.tape-clip{
+  position:absolute;
+  width:320vw;
+  left:50%;
+  height:var(--tape-h);
+  overflow:hidden;
+  /* No background here â€” background lives on .tape-chunk */
+}
+/*
+  Both tapes are centred on the midline (top:50% of .tape-zone = page centre).
+  Tape 1 sits half a tape-height ABOVE the midline  â†’ top: -var(--tape-h)
+  Tape 2 sits half a tape-height BELOW the midline  â†’ top: 0
+  This makes them cross exactly at the page Y centre.
+  The two different rotation signs (+4.58 / -4.58) create the X shape.
+*/
+.tape-clip-1{
+  top:calc(var(--tape-h) * -1);   /* top band â€” above centreline */
+  transform:translateX(-55%) rotate(10deg);
+  transform-origin:center center;
+}
+.tape-clip-2{
+  top:0;                           /* bottom band â€” below centreline */
+  transform:translateX(-50%) rotate(-10deg);
+  transform-origin:center center;
+}
+@media (max-width: 600px) {
+  .tape-clip-1{
+    transform:translateX(-60%) rotate(20deg);
+  }
+  .tape-clip-2{
+    transform:translateX(-50%) rotate(-20deg);
+  }
+}
+/* The single moving element â€” contains everything */
+.tape-scroll{
+  display:flex;
+  flex-wrap:nowrap;
+  height:75%;
+  width:max-content;
+  will-change:transform;
+}
+.tape-clip-1 .tape-scroll{ animation:slide-r 100s linear infinite; }
+.tape-clip-2 .tape-scroll{ animation:slide-l 100s linear infinite; }
+@keyframes slide-r{
+  from{ transform:translateX(0) }
+  to  { transform:translateX(-50%) }
+}
+@keyframes slide-l{
+  from{ transform:translateX(-50%) }
+  to  { transform:translateX(0) }
+}
+/*
+  .tape-chunk â€” the yellow block.
+  The perforated dots are a CSS background-image
+  drawn as TWO rows of dark circles at the top and
+  bottom of this element. Since this element is
+  INSIDE .tape-scroll, it all scrolls together.
+*/
+.tape-chunk{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  height:var(--tape-h);
+  flex-shrink:0;
+  /*
+    Yellow background base.
+    On top of that, two rows of repeating circles
+    at the very top edge and very bottom edge.
+    background-image layer order (top = first):
+      1. top dot row
+      2. bottom dot row
+      3. solid yellow fill
+  */
+  background-color: #FFD700;
+  background-image:
+    /* Top perforated strip */
+    repeating-linear-gradient(
+      90deg,
+      var(--bg) 0px,   var(--bg) 9px,
+      transparent 9px, transparent 20px
+    ),
+    /* Bottom perforated strip */
+    repeating-linear-gradient(
+      90deg,
+      var(--bg) 0px,   var(--bg) 9px,
+      transparent 9px, transparent 20px
+    );
+  background-size:
+    20px 8px,   /* top row: repeats every 20px, 8px tall */
+    20px 8px;   /* bottom row */
+  background-position:
+    0 0,                          /* top edge */
+    0 calc(var(--tape-h) - 8px);  /* bottom edge */
+  background-repeat:
+    repeat-x,
+    repeat-x;
+}
+/* Text+dot unit â€” sits between the perforated edges */
+.tape-unit{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:0 4px;
+  white-space:nowrap;
+  font-family:'Outfit',sans-serif;
+  font-weight:700;
+  font-size:13.5px;
+  letter-spacing:0.07em;
+  text-transform:uppercase;
+  color:var(--bg);
+  line-height:1;
+  flex-shrink:0;
+}
+.tape-unit .dot{
+  width:7px; height:7px;
+  border-radius:50%;
+  background:var(--bg);
+  flex-shrink:0;
+}
+
+
+
+.blog-slider-nav-link.w--current .blog-slider-nav-line {
+  background-color: #000;
+}
+@keyframes spin360 {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.let-image {
+  animation: spin360 8s linear infinite;
+}
+.img-1 {
+  animation: astroUp 2.5s ease-in-out infinite;
+}
+.img-2 {
+  animation: astroDown 2.5s ease-in-out infinite;
+}
+@keyframes astroUp {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-40px); }
+  100% { transform: translateY(0); }
+}
+@keyframes astroDown {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(40px); }
+  100% { transform: translateY(0); }
+}
+
+
+
+.custom-cursor{
+  position:fixed;
+  top:0;
+  left:0;
+  width:14px;
+  height:14px;
+  background:#FFD600;
+  border-radius:999px;
+  pointer-events:none;
+  z-index:99999;
+  transform:translateY(-50%);
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  white-space:nowrap;
+  transition:
+    width .38s cubic-bezier(.22,1,.36,1),
+    padding .38s cubic-bezier(.22,1,.36,1),
+    opacity .25s ease;
+  will-change:width,padding;
+}
+/* RESPONSIVE CAPSULE */
+.custom-cursor.active{
+  width:auto;
+  padding:18px;
+}
+/* TEXT */
+.cursor-text{
+  color:#000;
+  font-size:14px;
+  font-weight:600;
+  line-height:1;
+  opacity:0;
+  transition:opacity .2s ease;
+}
+/* SHOW TEXT */
+.custom-cursor.active .cursor-text{
+  opacity:1;
+}
+/* MOBILE */
+@media(max-width:991px){
+  .custom-cursor{
+    display:none;
+  }
+}
+  /* ==========================================
+   FLIP CARD
+   ========================================== */
+/* 1. Outer â€” holds perspective only */
+.flip-card {
+  perspective: 1200px;
+  cursor: pointer;
+}
+/* 2. Tilt layer â€” JS moves this */
+.tilt-wrapper {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+/* 3. Flip layer â€” CSS hover flips this */
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(.4,.2,.2,1);
+}
+/* Flip happens on hover of outer card */
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+/* Front & Back shared */
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+/* Sheen light effect */
+.flip-card-front::after,
+.flip-card-back::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255,255,255,0.22),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  border-radius: 22px;
+}
+.flip-card:hover .flip-card-front::after,
+.flip-card:hover .flip-card-back::after {
+  opacity: 1;
+}
+/* Front */
+.flip-card-front {
+  background-color: #F5C500;
+  z-index: 2;
+}
+/* Back â€” pre-rotated so it's hidden */
+.flip-card-back {
+  background-color: #111111;
+  border: 2px solid #F5C500;
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+/* Images */
+.flip-card-front img,
+.flip-card-back img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 78%;
+  object-fit: cover;
+  object-position: top center;
+}
+/* Info box */
+.card-info-front,
+.card-info {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%;
+  padding: 12px 16px;
+  background: #000000;
+  box-sizing: border-box;
+}
+.card-info-front h4,
+.card-info h4 {
+  color: #F5C500;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+.card-info-front p,
+.card-info p {
+  color: rgba(255,255,255,0.65);
+  font-size: 12px;
+  margin: 0;
+}
+/* ==========================================
+   TABS
+   ========================================== */
+.team-grid.hidden {
+  display: none !important;
+}
+.tab-item.active {
+  background-color: #F5C500 !important;
+  color: #000000 !important;
+  font-weight: 700;
+  border-radius: 999px;
+}
+  /* â”€â”€ Infinite 360 Rotation â”€â”€ */
+@keyframes spin360 {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.aboutus_logo {
+  animation: spin360 8s linear infinite;
+}
+.ts-stage{
+    position:relative;
+    width:100%;
+    height:320px;
+    overflow:hidden;
+}
+.ts-card{
+    position:absolute;
+    bottom:0;
+    overflow:hidden;
+    border-radius:18px;
+    transition:
+    left .6s cubic-bezier(.4,0,.2,1),
+    width .6s cubic-bezier(.4,0,.2,1),
+    height .6s cubic-bezier(.4,0,.2,1),
+    opacity .5s cubic-bezier(.4,0,.2,1),
+    filter .6s cubic-bezier(.4,0,.2,1);
+    will-change:left,width,height,opacity,filter;
+}
+.video-wrap{
+    width:100%;
+    height:100%;
+    position:relative;
+    overflow:hidden;
+}
+.video-wrap video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+/* SIDE CARDS */
+.ts-card:not(.active){
+    filter:brightness(.45);
+}
+/* ACTIVE CARD */
+.ts-card.active{
+    filter:brightness(1);
+}
+.ts-info-row{
+    position:relative;
+    height:140px;
+    overflow:hidden;
+    margin-top:24px;
+}
+.ts-info-slide{
+    position:absolute;
+    width:100%;
+    text-align:center;
+    padding:18px 40px 0;
+    transition:
+    transform .6s cubic-bezier(.4,0,.2,1),
+    opacity .4s;
+}
+.ts-quote{
+    color:#fff;
+    font-size:16px;
+    line-height:1.7;
+    margin-bottom:12px;
+}
+.ts-name{
+    color:#f5c800;
+    font-weight:700;
+    margin-bottom:4px;
+}
+.ts-role{
+    color:#777;
+    font-size:13px;
+}
+.ts-dots{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin-top:20px;
+}
+.dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#444;
+    cursor:pointer;
+    transition:.3s;
+}
+.dot.active{
+    background:#f5c800;
+    transform:scale(1.4);
+}
+.ts-popup{
+  display:none;
+}
+.ts-popup.active{
+  display: block;
+}
+

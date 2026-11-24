@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Access Denied — Cloutgency CMS</title>
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/cloutgency.css">
+
+  <style>
+    body {
+      background: #060505;
+      color: #fff;
+      font-family: 'Lufga', 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .denied-box {
+      max-width: 480px;
+      background: rgba(18, 17, 24, 0.85);
+      border: 1px solid rgba(255, 71, 87, 0.3);
+      padding: 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255, 71, 87, 0.1);
+    }
+    .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ff6b81;
+      margin-bottom: 8px;
+    }
+    p {
+      font-size: 13.5px;
+      color: #aaa;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .btn {
+      display: inline-block;
+      background: #FFD700;
+      color: #000;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px 24px;
+      border-radius: 999px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn:hover {
+      background: #FFE566;
+      box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="denied-box">
+    <div class="icon">🔒</div>
+    <h1>Insufficient Privileges</h1>
+    <p>Your current user account does not have permission to access the <strong>[<%= requiredPrivilege %>]</strong> management section. Please contact your Super Admin to update your account privileges.</p>
+    <a href="/admin/dashboard" class="btn">Return to Dashboard →</a>
+  </div>
+</body>
+</html>

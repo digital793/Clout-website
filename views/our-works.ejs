@@ -1,0 +1,89 @@
+<%- include('partials/head', {
+  title,
+  meta,
+  currentPath,
+  wfPage: '6a0e8d3639b75dd2ea8da405',
+  bodyClass: 'body-11',
+  extraHead: "<link href=\"/css/pages/our-works.css\" rel=\"stylesheet\" type=\"text/css\">\n<link href=\"/css/pages/portfolio-hover-videos.css\" rel=\"stylesheet\" type=\"text/css\">"
+}) %>
+
+<%- include('partials/navbar') %>
+
+<section class="our_work_brand_card_wraper">
+    <div class="w-layout-blockcontainer container-37 w-container">
+      <div class="div-block-223">
+        <h3 class="heading-52">Our Work</h3>
+        <div class="w-layout-blockcontainer container-34 w-container">
+          <div filter-tab="all" class="filter-tab">
+            <div class="text-block-73">All</div>
+          </div>
+          <div filter-tab="real-estate" class="filter-tab">
+            <div class="text-block-73">Real Estate</div>
+          </div>
+          <div filter-tab="fnb" class="filter-tab">
+            <div class="text-block-73">F&amp;B</div>
+          </div>
+          <div filter-tab="restaurant" class="filter-tab">
+            <div class="text-block-73">Restaurant</div>
+          </div>
+          <div filter-tab="lifestyle" class="filter-tab">
+            <div class="text-block-73">Lifestyle</div>
+          </div>
+          <div filter-tab="HPC" class="filter-tab">
+            <div class="text-block-73">Health &amp; Personal Care</div>
+          </div>
+        </div>
+        <div class="w-layout-blockcontainer container-38 w-container">
+          <div data-delay="0" data-hover="false" class="dropdown-2 w-dropdown">
+            <div class="dropdown-toggle-2 w-dropdown-toggle">
+              <div class="w-icon-dropdown-toggle"></div>
+              <div>All</div>
+            </div>
+            <nav class="dropdown-list-3 w-dropdown-list">
+              <a filter-tab="all" href="#" class="filter-tab-mob w-dropdown-link">All</a>
+              <a filter-tab="real-estate" href="#" class="filter-tab-mob w-dropdown-link">Real Estate</a>
+              <a filter-tab="fnb" href="#" class="filter-tab-mob w-dropdown-link">F&amp;B</a>
+              <a filter-tab="restaurant" href="#" class="filter-tab-mob w-dropdown-link">Restaurant</a>
+              <a filter-tab="lifestyle" href="#" class="filter-tab-mob w-dropdown-link">Lifestyle</a>
+              <a filter-tab="HPC" href="#" class="filter-tab-mob w-dropdown-link">Health &amp; Personal Care</a>
+            </nav>
+          </div>
+        </div>
+        <div data-w-id="36090b7b-0052-acff-3736-be2d3d206b04" class="w-layout-grid card_wraper_ourwork">
+<% if (Array.isArray(works)) { %>
+<% works.forEach((item, index) => { %>
+  <%- include('partials/work-card', { item, index }) %>
+<% }); %>
+<% } %>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  <section data-w-id="f761af87-bd41-8c10-a866-429c3c5ffad4" class="brand-explorer">
+    <div class="w-layout-blockcontainer container-28 w-container">
+      <div class="hero-center">
+        <h3 class="heading-42">Ready to Win the Internet?</h3>
+        <div class="div-block-202 _222212">
+          <div>
+            <a data-w-id="0467b93e-b800-3bb3-d6e7-ff6a07cf247a" href="/contact-us" class="button-_class w-inline-block">
+              <div class="text-block-45">Contact Us</div><img loading="lazy" src="/images/iconsax-arrow-right-01-1.png" alt="" class="image-131">
+            </a>
+          </div>
+        </div><img loading="lazy" src="/images/205631-2-2.gif" alt="">
+      </div>
+      <div class="sticky-wrapper">
+        <div id="brand-scroller" class="scroller">
+          <div class="brand-card-1"></div>
+          <div class="brand-card-2"></div>
+          <div class="brand-card-3"></div>
+          <div class="brand-card-4"></div>
+          <div class="brand-card-5"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<%- include('partials/footer', {
+  extraScripts: "<script src=\"/js/components/portfolio-hover-videos.js\"></script>\n<script src=\"/js/pages/our-works.js\"></script>"
+}) %>

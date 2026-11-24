@@ -1,0 +1,70 @@
+[
+  {
+    "id": "wrk_1",
+    "title": "Super Chennai",
+    "slug": "super-chennai",
+    "client": "Super Chennai",
+    "category": "Branding & Social Campaign",
+    "tags": [
+      "Branding",
+      "Social",
+      "Video"
+    ],
+    "image_url": "/images/Superchennai_2.png",
+    "video_url": "/videos/superchennai_website_2_mp4.mp4",
+    "project_url": "/our-works",
+    "is_featured": true,
+    "display_order": 1
+  },
+  {
+    "id": "wrk_2",
+    "title": "Naturals Salon",
+    "slug": "naturals-salon",
+    "client": "Naturals",
+    "category": "Brand Campaign & Performance",
+    "tags": [
+      "Influencer",
+      "Performance",
+      "Campaign"
+    ],
+    "image_url": "/images/Naturals_4.png",
+    "video_url": "/videos/naturals_1-1_mp4.mp4",
+    "project_url": "/our-works",
+    "is_featured": true,
+    "display_order": 2
+  },
+  {
+    "id": "wrk_3",
+    "title": "Dr. B Smile Studio",
+    "slug": "dr-b-smile-studio",
+    "client": "Dr. B Clinic",
+    "category": "Brand Identity & Web",
+    "tags": [
+      "Identity",
+      "Web",
+      "Creative Direction"
+    ],
+    "image_url": "/images/Dr-B_1.png",
+    "video_url": "/videos/dr.b-website_combine_loop_mp4.mp4",
+    "project_url": "/our-works",
+    "is_featured": true,
+    "display_order": 3
+  },
+  {
+    "id": "wrk_4",
+    "title": "KKIX Customs",
+    "slug": "kkix-customs",
+    "client": "KKIX",
+    "category": "E-commerce & Content",
+    "tags": [
+      "Streetwear",
+      "E-com",
+      "Gen-Z"
+    ],
+    "image_url": "/images/KKIX_3.png",
+    "video_url": "/videos/KKIX_Customs_1_hqjhgc-2_mp4.mp4",
+    "project_url": "/our-works",
+    "is_featured": true,
+    "display_order": 4
+  }
+]

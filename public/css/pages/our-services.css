@@ -1,0 +1,18 @@
+﻿/* Webflow IX2 initial-state rules removed - using custom JS animations */
+.invisible { visibility: visible !important; opacity: 1 !important; }
+.home-logo-container, .image-238, .popup-tamplate { visibility: visible !important; }
+
+
+  .tab {
+  position: relative;
+}
+.progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: #ffd600;
+  transition: width 0.2s ease-out;
+}
+

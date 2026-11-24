@@ -1,0 +1,155 @@
+{
+  "home": {
+    "slug": "home",
+    "title": "Creative Agency in Chennai — Grow Your Brand Now | Cloutgency",
+    "seo": {
+      "meta_title": "Creative Agency in Chennai — Grow Your Brand Now | Cloutgency",
+      "meta_description": "Cloutgency is Chennai's leading creative agency for branding & digital marketing. The branding agency in Chennai businesses trust. Build yours today.",
+      "canonical": "https://cloutgency.com/",
+      "og_image": "/images/og-image.jpg",
+      "keywords": "creative agency chennai, branding agency chennai, digital marketing chennai, gen-z marketing"
+    },
+    "sections": {
+      "hero": {
+        "headline_1": "YOUR BRAND IS INVISIBLE TO",
+        "headline_2": "ANYONE UNDER 30",
+        "star_icon": "/images/Astrix_1440.png",
+        "tagline": "WE'RE HERE TO FIX THAT.",
+        "subtext": "CLOUTGENCY IS BUILT FOR ONE JOB — MAKING CONSUMER BRANDS IMPOSSIBLE TO IGNORE BY THE GENERATION THAT ACTUALLY DECIDES WHAT'S RELEVANT.",
+        "cta_text": "CONTACT US",
+        "cta_link": "/contact-us",
+        "video_preview": "/videos/Cloutgency-Ad-Reeel-1-1_mp4.mp4",
+        "expand_video": "/videos/website_6-resize_mp4.mp4"
+      },
+      "stats": [
+        {
+          "label": "BRANDS TRANSFORMED",
+          "value": "150",
+          "suffix": "+"
+        },
+        {
+          "label": "GEN-Z REACH",
+          "value": "45",
+          "suffix": "M+"
+        },
+        {
+          "label": "ROI ACCELERATION",
+          "value": "3.8",
+          "suffix": "x"
+        },
+        {
+          "label": "AWARDS & MENTIONS",
+          "value": "24",
+          "suffix": ""
+        }
+      ],
+      "newsletter": {
+        "heading": "STAY AHE@D",
+        "subtext": "Get the insights, ideas, and cultural shifts that matter to consumer brands, before everyone else catches on. Sign up and unlock a Free discovery call with the Cloutgency team.",
+        "button_text": "→"
+      }
+    }
+  },
+  "about-us": {
+    "slug": "about-us",
+    "title": "About Us — Who We Are | Cloutgency",
+    "seo": {
+      "meta_title": "About Us — Who We Are | Cloutgency",
+      "meta_description": "Learn about Cloutgency — Chennai's leading creative agency. Our team, our story, and our mission to make brands impossible to ignore.",
+      "canonical": "https://cloutgency.com/about-us",
+      "og_image": "/images/og-image.jpg",
+      "keywords": "about cloutgency, creative agency team, chennai branding team"
+    },
+    "sections": {
+      "hero": {
+        "title": "ABOUT CLOUTGENCY",
+        "subtitle": "We are culture architects, storytellers, and growth partners for the next generation of brands."
+      }
+    }
+  },
+  "our-services": {
+    "slug": "our-services",
+    "title": "Our Services — Branding, Digital Marketing & More | Cloutgency",
+    "seo": {
+      "meta_title": "Our Services — Branding, Digital Marketing & More | Cloutgency",
+      "meta_description": "Explore Cloutgency's full range of creative services: branding, digital marketing, content creation, performance marketing, web design, and SEO.",
+      "canonical": "https://cloutgency.com/our-services",
+      "og_image": "/images/og-image.jpg",
+      "keywords": "branding services, performance marketing, web design chennai, seo services"
+    },
+    "sections": {
+      "hero": {
+        "title": "WHAT WE DO",
+        "subtitle": "End-to-end creative strategies engineered to build culture and drive market dominance."
+      }
+    }
+  },
+  "our-works": {
+    "slug": "our-works",
+    "title": "Our Work — Portfolio & Case Studies | Cloutgency",
+    "seo": {
+      "meta_title": "Our Work — Portfolio & Case Studies | Cloutgency",
+      "meta_description": "See Cloutgency's portfolio — real results for real brands. Branding, campaigns, content, and web projects that made an impact.",
+      "canonical": "https://cloutgency.com/our-works",
+      "og_image": "/images/og-image.jpg",
+      "keywords": "portfolio, brand case studies, creative campaigns, cloutgency works"
+    },
+    "sections": {
+      "hero": {
+        "title": "SELECTED WORKS",
+        "subtitle": "Explore our latest brand identities, high-converting campaigns, and digital experiences."
+      }
+    }
+  },
+  "contact-us": {
+    "slug": "contact-us",
+    "title": "Contact Us — Get in Touch | Cloutgency",
+    "seo": {
+      "meta_title": "Contact Us — Get in Touch | Cloutgency",
+      "meta_description": "Ready to grow your brand? Get in touch with Cloutgency — Chennai's leading creative agency. Let's build something great together.",
+      "canonical": "https://cloutgency.com/contact-us",
+      "og_image": "/images/og-image.jpg",
+      "keywords": "contact cloutgency, hire creative agency, chennai agency contact"
+    },
+    "sections": {
+      "hero": {
+        "title": "LET'S TALK CLOUT",
+        "subtitle": "Tell us where you want to take your brand. We will build the rocket."
+      }
+    }
+  },
+  "careers": {
+    "slug": "careers",
+    "title": "Careers — Join Our Team | Cloutgency",
+    "seo": {
+      "meta_title": "Careers — Join Our Team | Cloutgency",
+      "meta_description": "Join the Cloutgency team! We are always looking for talented creatives, marketers, and developers. See our open positions.",
+      "canonical": "https://cloutgency.com/careers",
+      "og_image": "/images/og-image.jpg",
+      "keywords": "cloutgency jobs, creative internships chennai, graphic designer jobs, copywriter hiring"
+    },
+    "sections": {
+      "hero": {
+        "title": "JOIN THE REVOLUTION",
+        "subtitle": "Work with the boldest brands and the sharpest minds in creative advertising."
+      }
+    }
+  },
+  "blog": {
+    "slug": "blog",
+    "title": "Blog — Insights, Tips & Stories | Cloutgency",
+    "seo": {
+      "meta_title": "Blog — Insights, Tips & Stories | Cloutgency",
+      "meta_description": "Cloutgency blog — insights, tips, and stories about branding, digital marketing, content creation, and building brands that Gen Z loves.",
+      "canonical": "https://cloutgency.com/blog",
+      "og_image": "/images/og-image.jpg",
+      "keywords": "marketing insights, branding tips, gen z marketing blog, design articles"
+    },
+    "sections": {
+      "hero": {
+        "title": "THE CLOUT JOURNAL",
+        "subtitle": "Dispatches on culture, design, consumer psychology, and algorithmic growth."
+      }
+    }
+  }
+}

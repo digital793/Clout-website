@@ -1,0 +1,334 @@
+<%- include('layout', {
+  body: `
+  <style>
+    .users-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .users-table th {
+      padding: 14px 18px;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .users-table td {
+      padding: 16px 18px;
+      font-size: 13.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #ddd;
+    }
+    .users-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .priv-pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin: 2px;
+      background: rgba(255, 215, 0, 0.08);
+      color: var(--gold);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+    }
+    .priv-pill.all {
+      background: rgba(46, 213, 115, 0.15);
+      color: #2ed573;
+      border-color: rgba(46, 213, 115, 0.3);
+    }
+
+    /* Privileges Checkbox Grid */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #ccc;
+      cursor: pointer;
+    }
+    .checkbox-item input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+    .checkbox-item:hover {
+      color: #fff;
+    }
+  </style>
+
+  <div class="users-header">
+    <div>
+      <h2 style="font-size:22px; font-weight:800; color:#fff;">User Management & Privilege Control</h2>
+      <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">Super Admin control over team members, editors, and granular dashboard access</p>
+    </div>
+    <button type="button" class="btn-action-gold" onclick="openCreateUserModal()">
+      <span>+ Create User with Privileges</span>
+    </button>
+  </div>
+
+  <div class="glass-panel" style="padding:0; overflow:hidden;">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th style="min-width:320px;">Assigned Privileges</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${users.map(u => `
+          <tr id="user_row_${u.id}">
+            <td>
+              <div style="font-weight:700; color:#fff;">${u.username}</div>
+            </td>
+            <td>${u.email}</td>
+            <td>
+              <span class="type-badge ${u.role === 'superadmin' ? 'career' : 'contact'}">
+                ${u.role.toUpperCase()}
+              </span>
+            </td>
+            <td>
+              ${u.role === 'superadmin'
+                ? '<span class="priv-pill all">✦ Full Super Admin Access</span>'
+                : (u.privileges && u.privileges.length > 0)
+                  ? u.privileges.map(p => '<span class="priv-pill">' + p.replace(/_/g, ' ') + '</span>').join('')
+                  : '<span style="color:var(--text-dim); font-size:11px;">No privileges assigned</span>'
+              }
+            </td>
+            <td>
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="btn-edit-item" style="padding:5px 12px;" onclick='openEditPrivModal(${JSON.stringify(u)})'>
+                  Privileges ✎
+                </button>
+                ${u.role !== 'superadmin' ? `
+                  <button type="button" class="btn-del-item" style="padding:5px 10px;" onclick="deleteUser(${u.id})">✕</button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Create User Modal -->
+  <div class="modal-backdrop" id="createUserModal">
+    <div class="modal-box" style="max-width:650px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--border-subtle); padding-bottom:14px;">
+        <h3 style="font-size:17px; font-weight:800; color:#fff;">Create New User & Set Privileges</h3>
+        <button type="button" style="background:none; border:none; color:#888; font-size:20px; cursor:pointer;" onclick="closeModal('createUserModal')">✕</button>
+      </div>
+
+      <form id="createUserForm">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="form-group">
+            <label class="form-label">Full Name / Username</label>
+            <input type="text" class="form-control" name="username" required placeholder="e.g. John Doe">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-control" name="email" required placeholder="john@cloutgency.com">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="form-group">
+            <label class="form-label">Login Password</label>
+            <input type="password" class="form-control" name="password" required placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Base Role</label>
+            <select class="form-control" name="role" id="newUserRole">
+              <option value="editor">Editor (Custom Privileges)</option>
+              <option value="superadmin">Super Admin (All Privileges)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Select Dashboard Privileges (Checkboxes)</label>
+          <div class="checkbox-grid" id="createPrivGrid">
+            <label class="checkbox-item"><input type="checkbox" name="privileges" value="dashboard" checked> Dashboard Overview</label>
+            <label class="checkbox-item"><input type="checkbox" name="privileges" value="forms" checked> Form Inquiries</label>
+            <label class="checkbox-item"><input type="checkbox" name="privileges" value="pages" checked> Page Content Editor</label>
+            <label class="checkbox-item"><input type="checkbox" name="privileges" value="seo" checked> SEO & Metadata</label>
+            <label class="checkbox-item"><input type="checkbox" name="privileges" value="services" checked> Services Collection</label>
+            <label class="checkbox-item"><input type="checkbox" name="privileges" value="works" checked> Works / Portfolio</label>
+            <label class="checkbox-item"><input type="checkbox" name="privileges" value="case_studies" checked> Case Studies</label>
+            <label class="checkbox-item"><input type="checkbox" name="privileges" value="blogs" checked> Blogs & Articles</label>
+            <label class="checkbox-item"><input type="checkbox" name="privileges" value="team" checked> Team Management</label>
+            <label class="checkbox-item"><input type="checkbox" name="privileges" value="assets" checked> Media Asset Manager</label>
+            <label class="checkbox-item"><input type="checkbox" name="privileges" value="users"> User Management</label>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+          <button type="button" class="btn-live-preview" onclick="closeModal('createUserModal')">Cancel</button>
+          <button type="submit" class="btn-action-gold">Create User ✦</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Privileges Modal -->
+  <div class="modal-backdrop" id="editPrivModal">
+    <div class="modal-box" style="max-width:600px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--border-subtle); padding-bottom:14px;">
+        <h3 id="editPrivHeading" style="font-size:17px; font-weight:800; color:#fff;">Modify User Privileges</h3>
+        <button type="button" style="background:none; border:none; color:#888; font-size:20px; cursor:pointer;" onclick="closeModal('editPrivModal')">✕</button>
+      </div>
+
+      <form id="editPrivForm">
+        <input type="hidden" id="editUserId">
+
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select class="form-control" id="editUserRole">
+            <option value="editor">Editor (Custom Privileges)</option>
+            <option value="superadmin">Super Admin (Full Privileges)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Configure Allowed Privileges (Click Checkboxes to Toggle)</label>
+          <div class="checkbox-grid" id="editPrivGrid">
+            <label class="checkbox-item"><input type="checkbox" value="dashboard"> Dashboard Overview</label>
+            <label class="checkbox-item"><input type="checkbox" value="forms"> Form Inquiries</label>
+            <label class="checkbox-item"><input type="checkbox" value="pages"> Page Content Editor</label>
+            <label class="checkbox-item"><input type="checkbox" value="seo"> SEO & Metadata</label>
+            <label class="checkbox-item"><input type="checkbox" value="services"> Services Collection</label>
+            <label class="checkbox-item"><input type="checkbox" value="works"> Works / Portfolio</label>
+            <label class="checkbox-item"><input type="checkbox" value="case_studies"> Case Studies</label>
+            <label class="checkbox-item"><input type="checkbox" value="blogs"> Blogs & Articles</label>
+            <label class="checkbox-item"><input type="checkbox" value="team"> Team Management</label>
+            <label class="checkbox-item"><input type="checkbox" value="assets"> Media Asset Manager</label>
+            <label class="checkbox-item"><input type="checkbox" value="users"> User Management</label>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+          <button type="button" class="btn-live-preview" onclick="closeModal('editPrivModal')">Cancel</button>
+          <button type="submit" class="btn-action-gold">Save Privileges ✦</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openCreateUserModal() {
+      document.getElementById('createUserForm').reset();
+      document.getElementById('createUserModal').classList.add('show');
+    }
+
+    function openEditPrivModal(user) {
+      document.getElementById('editUserId').value = user.id;
+      document.getElementById('editUserRole').value = user.role;
+      document.getElementById('editPrivHeading').textContent = 'Privileges for: ' + user.username;
+
+      const privs = user.privileges || [];
+      document.querySelectorAll('#editPrivGrid input[type="checkbox"]').forEach(cb => {
+        cb.checked = user.role === 'superadmin' || privs.includes(cb.value);
+      });
+
+      document.getElementById('editPrivModal').classList.add('show');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    // Submit Create User
+    document.getElementById('createUserForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const username = form.username.value;
+      const email = form.email.value;
+      const password = form.password.value;
+      const role = form.role.value;
+      const checkedBoxes = Array.from(form.querySelectorAll('#createPrivGrid input[type="checkbox"]:checked')).map(cb => cb.value);
+
+      try {
+        const res = await fetch('/api/admin/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password, role, privileges: checkedBoxes })
+        });
+        const r = await res.json();
+        if (r.success) {
+          showToast('User created successfully!');
+          setTimeout(() => location.reload(), 600);
+        } else {
+          showToast(r.error, true);
+        }
+      } catch (err) {
+        showToast('Error creating user: ' + err.message, true);
+      }
+    });
+
+    // Submit Edit Privileges
+    document.getElementById('editPrivForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userId = document.getElementById('editUserId').value;
+      const role = document.getElementById('editUserRole').value;
+      const checkedBoxes = Array.from(document.querySelectorAll('#editPrivGrid input[type="checkbox"]:checked')).map(cb => cb.value);
+
+      try {
+        const res = await fetch('/api/admin/users/' + userId + '/privileges', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role, privileges: checkedBoxes })
+        });
+        const r = await res.json();
+        if (r.success) {
+          showToast('User privileges updated!');
+          setTimeout(() => location.reload(), 600);
+        } else {
+          showToast(r.error, true);
+        }
+      } catch (err) {
+        showToast('Error updating privileges: ' + err.message, true);
+      }
+    });
+
+    async function deleteUser(id) {
+      if (!confirm('Are you sure you want to remove this user?')) return;
+      try {
+        const res = await fetch('/api/admin/users/' + id, { method: 'DELETE' });
+        const r = await res.json();
+        if (r.success) {
+          showToast('User deleted');
+          document.getElementById('user_row_' + id)?.remove();
+        } else {
+          showToast(r.error, true);
+        }
+      } catch (err) {
+        showToast('Error deleting user: ' + err.message, true);
+      }
+    }
+  </script>
+`}) %>

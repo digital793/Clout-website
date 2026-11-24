@@ -1,0 +1,148 @@
+<%- include('layout', {
+  body: `
+  <style>
+    .upload-dropzone {
+      border: 2px dashed var(--border-gold);
+      border-radius: var(--radius-md);
+      padding: 40px 20px;
+      text-align: center;
+      background: rgba(255, 215, 0, 0.02);
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 28px;
+    }
+    .upload-dropzone:hover {
+      background: rgba(255, 215, 0, 0.05);
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.1);
+    }
+    .media-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 18px;
+    }
+    .media-item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .media-item-preview {
+      height: 140px;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .media-item-preview img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .media-item-info {
+      padding: 12px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .media-name {
+      color: #fff;
+      font-weight: 700;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .btn-copy-url {
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      color: var(--gold);
+      padding: 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transition);
+    }
+    .btn-copy-url:hover {
+      background: var(--gold);
+      color: #000;
+    }
+  </style>
+
+  <div class="glass-panel gold-accent" style="margin-bottom:28px;">
+    <h2 style="font-size:18px; font-weight:800; color:#fff; margin-bottom:4px;">Upload Media Assets</h2>
+    <p style="font-size:12px; color:var(--text-muted); margin-bottom:20px;">Upload high-res images, vectors, or video showreels for instant use in any section</p>
+
+    <div class="upload-dropzone" onclick="document.getElementById('fileInput').click()">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" style="margin-bottom:10px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+      <div style="font-size:14px; font-weight:700; color:#fff;">Click or drag files here to upload</div>
+      <div style="font-size:11.5px; color:var(--text-dim); margin-top:4px;">Supports PNG, JPG, WEBP, SVG, MP4 (Up to 50MB)</div>
+      <input type="file" id="fileInput" style="display:none;">
+    </div>
+  </div>
+
+  <div class="glass-panel">
+    <h3 style="font-size:16px; font-weight:800; color:#fff; margin-bottom:16px;">Asset Library (${files.length} items)</h3>
+
+    <div class="media-gallery" id="mediaGallery">
+      ${files.map(f => `
+        <div class="media-item-card">
+          <div class="media-item-preview">
+            <img src="${f.url}" alt="${f.name}" onerror="this.src='/images/Astrix_1440.png'">
+          </div>
+          <div class="media-item-info">
+            <div class="media-name" title="${f.name}">${f.name}</div>
+            <div style="color:var(--text-dim); font-size:11px;">${f.size}</div>
+            <button type="button" class="btn-copy-url" onclick="copyPath('${f.url}', this)">Copy Path ↗</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+
+    fileInput.addEventListener('change', async () => {
+      if (!fileInput.files.length) return;
+      const file = fileInput.files[0];
+      const data = new FormData();
+      data.append('file', file);
+
+      showToast('Uploading asset: ' + file.name + '...');
+      try {
+        const res = await fetch('/api/admin/media/upload', {
+          method: 'POST',
+          body: data
+        });
+        const r = await res.json();
+        if (r.success) {
+          showToast('File uploaded successfully!');
+          setTimeout(() => location.reload(), 600);
+        } else {
+          showToast(r.error, true);
+        }
+      } catch (err) {
+        showToast('Upload failed: ' + err.message, true);
+      }
+    });
+
+    function copyPath(url, btn) {
+      navigator.clipboard.writeText(url).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied! ✓';
+        btn.style.background = 'var(--gold)';
+        btn.style.color = '#000';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.background = '';
+          btn.style.color = '';
+        }, 1500);
+      });
+    }
+  </script>
+`}) %>
