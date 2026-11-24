@@ -1,0 +1,159 @@
+/* =====================================================================
+   SERVICES CUBE  –  homepage "Our Services" section
+   ---------------------------------------------------------------------
+   Desktop : [ text cube ][ media cube ]   side by side, roll up/down
+   Mobile  : text cube stacked on top of media cube (< 768px), swing sideways
+   The two cubes always turn in OPPOSITE directions.
+   Everything is scoped under .svc so nothing leaks into the rest of the site.
+   Behaviour lives in /js/components/services-cube.js
+   ===================================================================== */
+
+.svc{
+  --svc-yellow:#FFD700;                   /* site yellow (cloutgency.css) */
+  --svc-black:#060505;
+  --svc-ink:#060505;
+  --svc-white:#fff;
+  --svc-font:'Outfit',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+
+  --svc-step:100svh;                      /* scroll distance per service (bigger = slower) */
+  --svc-n:5;                              /* set by JS from the item count       */
+  --gut:clamp(16px,4.5vw,64px);           /* side gutter                         */
+  --w:min(100vw - var(--gut) * 2,1440px); /* width of the whole cube composition */
+  --nav:100px;                            /* room for the site's floating navbar */
+  --head:clamp(72px,12svh,120px);         /* "Our Services" band                 */
+  /* faces are always SQUARE so the square videos fill them without cropping;
+     on short screens the cube gets narrower instead of cutting the video */
+  --h:min(var(--w) / 2,100svh - var(--nav) - var(--head) - 6svh); /* side of ONE cube face */
+  --sw:calc(var(--h) * 2);                /* stage width = two square faces      */
+  --d:var(--h);                           /* cube depth = the side that turns    */
+
+  position:relative;
+  height:calc(100vh + (var(--svc-n) - 1) * var(--svc-step));
+  height:calc(100svh + (var(--svc-n) - 1) * var(--svc-step));
+  background:var(--svc-black);
+  color:var(--svc-white);
+  font-family:var(--svc-font);
+  -webkit-font-smoothing:antialiased;
+}
+.svc *,.svc *::before,.svc *::after{box-sizing:border-box}
+
+/* ---------- Sticky stage ---------- */
+.svc__pin{
+  position:sticky;top:0;
+  height:100vh;height:100svh;
+  overflow:hidden;                        /* clips corners that swing past the viewport */
+  display:flex;flex-direction:column;
+  padding-top:var(--nav);
+}
+.svc__title{
+  flex:none;height:var(--head);margin:0;
+  display:flex;align-items:center;justify-content:center;
+  /* matches the site's section headings ("Our Clients": Lufga 36px, cream) */
+  font:400 clamp(26px,2.5vw,36px)/1.2 Lufga,Arial,sans-serif;
+  color:#FFF8DB;letter-spacing:.64px;text-transform:none;text-align:center;
+}
+.svc__body{flex:1;min-height:0;display:grid;place-items:center;padding-bottom:3svh}
+.svc__stage{
+  width:var(--sw);
+  display:grid;grid-template-columns:1fr 1fr;
+  user-select:none;-webkit-user-select:none;touch-action:pan-y;
+}
+@media (hover:hover) and (pointer:fine){.svc__stage{cursor:grab}}
+.svc__stage.is-dragging{cursor:grabbing}
+
+/* ---------- Cube ---------- */
+.svc .cube{position:relative;height:var(--h);perspective:calc(var(--d) * 4)}
+.svc .cube--l{perspective-origin:100% 50%}     /* vanishing point sits on the seam */
+.svc .cube--r{perspective-origin:0% 50%}
+.svc .cube__fix,.svc .cube__rig{position:absolute;inset:0;transform-style:preserve-3d}
+.svc .cube__fix{transform:translateZ(calc(var(--d) / -2))}  /* axis in the middle of the prism */
+.svc .cube__rig{will-change:transform}                      /* JS sets the rotation here       */
+
+.svc .face{
+  position:absolute;inset:0;overflow:hidden;container-type:size;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;
+  transform:rotateX(calc(var(--k) * -90deg)) translateZ(calc(var(--d) / 2));
+}
+.svc .cube--r .face{transform:rotateX(calc(var(--k) * 90deg)) translateZ(calc(var(--d) / 2))}
+.svc .face__shade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:3}
+
+/* ---------- Left face : service card ---------- */
+.svc .card{
+  position:absolute;inset:0;container-type:size;
+  background:var(--svc-yellow);color:var(--svc-ink);text-align:center;
+  font-family:var(--svc-font);
+}
+.svc .card > *{position:absolute;left:0;right:0;margin:0;color:inherit;font-family:inherit;text-transform:none}
+.svc .card__num{
+  top:21.6%;transform:translateY(-50%);
+  font-size:39.5cqmin;font-weight:700;line-height:1;letter-spacing:-.02em;
+}
+.svc .card__title{
+  top:46.9%;transform:translateY(-50%);
+  font-size:min(7.9cqmin,calc(128cqw / var(--len,12))); /* long titles shrink to fit (--len set by JS) */
+  font-weight:700;line-height:1;letter-spacing:.005em;
+  text-transform:uppercase;white-space:nowrap;
+}
+.svc .card__tag{
+  top:60.4%;transform:translateY(-50%);
+  left:8%;right:8%;
+  font-size:2.65cqmin;font-weight:400;line-height:1.35;
+  color:rgba(6,5,5,.72);text-wrap:balance;
+}
+.svc .card__list{
+  list-style:none;padding:0;
+  left:6.9%;right:6.9%;bottom:6.4%;
+  display:grid;grid-template-columns:1fr 1fr;
+  font-size:2.65cqmin;font-weight:400;line-height:1;
+}
+.svc .card__list li{height:6.1cqmin;display:flex;align-items:center;white-space:nowrap;margin:0}
+.svc .card__list li:nth-child(odd){justify-content:flex-end;padding-right:2.6cqmin;border-right:1px solid var(--svc-ink)}
+.svc .card__list li:nth-child(even){justify-content:flex-start;padding-left:2.7cqmin}
+.svc .card__list li:nth-child(n+3){border-top:1px solid var(--svc-ink)}
+
+/* ---------- Right face : image / video ---------- */
+.svc .media{position:absolute;inset:0;background:#111;overflow:hidden}
+.svc .media img,.svc .media video{display:block;width:100%;height:100%;object-fit:cover;max-width:none}
+.svc .media.is-empty{
+  --sq:6.25cqw;
+  background:
+    conic-gradient(#ececec 25%,#fcfcfc 0 50%,#ececec 0 75%,#fcfcfc 0) 0 0 / calc(var(--sq) * 2) calc(var(--sq) * 2);
+}
+
+/* ---------- Screen-reader / SEO copy (real text, visually hidden) ---------- */
+.svc__src{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;list-style:none;
+}
+
+/* ---------- Mobile : stacked cubes ---------- */
+@media (max-width:767px){
+  .svc{
+    --gut:16px;
+    --nav:80px;
+    --head:clamp(56px,9svh,80px);
+    --h:min(var(--w),(100svh - var(--nav) - var(--head) - 6svh) / 2); /* square faces */
+    --sw:var(--h);                        /* stage width = one square face       */
+    --d:var(--h);                         /* cubes swing sideways, so depth = width */
+    --svc-step:60svh;
+  }
+  .svc__stage{grid-template-columns:1fr}
+  .svc .cube--l{perspective-origin:50% 100%}   /* vanishing point on the horizontal seam */
+  .svc .cube--r{perspective-origin:50% 0%}
+  .svc .face{transform:rotateY(calc(var(--k) * 90deg)) translateZ(calc(var(--d) / 2))}
+  .svc .cube--r .face{transform:rotateY(calc(var(--k) * -90deg)) translateZ(calc(var(--d) / 2))}
+
+  .svc .card__num{font-size:40.5cqmin;top:21.5%}
+  .svc .card__title{font-size:min(9.2cqmin,calc(128cqw / var(--len,12)));top:47%}
+  .svc .card__tag{font-size:3.2cqmin;top:62%;left:7%;right:7%}
+  .svc .card__list{left:4.4%;right:4.4%;bottom:5.6%;font-size:3.2cqmin}
+  .svc .card__list li{height:7.4cqmin}
+  .svc .card__list li:nth-child(odd){padding-right:4cqmin}
+  .svc .card__list li:nth-child(even){padding-left:4cqmin}
+}
+
+/* ---------- No-JS fallback: show the plain list ---------- */
+.svc-no-js .svc{height:auto}
+.svc-no-js .svc__pin{position:static;height:auto;overflow:visible}
+.svc-no-js .svc__stage{display:none}
+.svc-no-js .svc__src{position:static;width:auto;height:auto;margin:0 auto;padding:24px var(--gut);clip:auto;clip-path:none;white-space:normal;color:#fff}
