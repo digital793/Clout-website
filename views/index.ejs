@@ -166,6 +166,8 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #FFD700;
+    text-align: center;       /* centred above the heading */
+    margin-bottom: 10px;
   }
   .ch-qmark[hidden],
   .ch-qtext[hidden] {
@@ -523,6 +525,23 @@
      reorder the videos. Works with any count ≥ 2.
   ============================================================ */
   const TESTIMONIALS = [
+    // Order matters: the carousel opens on the FIRST entry (centre),
+    // the second shows on its right and the LAST shows on its left.
+    // DRA / Superchennai is always featured first.
+    {
+      video: "/videos/testimonials/optimized/dra-ranjeeth-coloured-1.web.mp4",
+      poster: "/videos/testimonials/dra-ranjeeth-coloured-1.jpg",
+      text: "Cloutgency understands what Gen-Z & Gen Alpha audience want, they bring fresh and vibrant ideas to life.",
+      name: "Ranjeeth Rathod",
+      role: "MD - DRA Homes, Superchennai"
+    },
+    {
+      video: "/videos/testimonials/optimized/dr-b-testimonial.web.mp4",
+      poster: "/videos/testimonials/dr-b-testimonial.jpg",
+      text: "Cloutgency delivered exactly what I envisioned for my clinic - creative, sharp, receptive. Two years in, and I've found family in this team",
+      name: "Dr. Bhairavi Senthil",
+      role: "Founder - DR.B 360 DERMATOLOGY EXPERIENTIAL CENTER"
+    },
     {
       video: "/videos/testimonials/optimized/soft-serve-testimony.web.mp4",
       poster: "/videos/testimonials/soft-serve-testimony.jpg",
@@ -545,11 +564,11 @@
       role: "Client testimonial"
     },
     {
-      video: "/videos/testimonials/optimized/dra-ranjeeth-coloured-1.web.mp4",
-      poster: "/videos/testimonials/dra-ranjeeth-coloured-1.jpg",
-      text: "Cloutgency understands what Gen-Z & Gen Alpha audience want, they bring fresh and vibrant ideas to life.",
-      name: "Ranjeeth Rathod",
-      role: "MD - DRA Homes, Superchennai"
+      video: "/videos/testimonials/optimized/anantha-testimonial.web.mp4",
+      poster: "/videos/testimonials/anantha-testimonial.jpg",
+      text: "",
+      name: "Anantha",
+      role: "Client testimonial"
     },
     {
       video: "/videos/testimonials/optimized/dra-x-cloutgency-v1.web.mp4",
@@ -557,20 +576,6 @@
       text: "Clout team made an exceptional job in scaling our social media presence in a very short time, it's been a fun & exciting journey with them.",
       name: "Manoj Vasudevan",
       role: "Head of Sales & Marketing - DRA Homes"
-    },
-    {
-      video: "/videos/testimonials/optimized/dr-b-testimonial.web.mp4",
-      poster: "/videos/testimonials/dr-b-testimonial.jpg",
-      text: "Cloutgency delivered exactly what I envisioned for my clinic - creative, sharp, receptive. Two years in, and I've found family in this team",
-      name: "Dr. Bhairavi Senthil",
-      role: "Founder - DR.B 360 DERMATOLOGY EXPERIENTIAL CENTER"
-    },
-    {
-      video: "/videos/testimonials/optimized/anantha-testimonial.web.mp4",
-      poster: "/videos/testimonials/anantha-testimonial.jpg",
-      text: "",
-      name: "Anantha",
-      role: "Client testimonial"
     }
   ];
   const PLAY_ICON_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
