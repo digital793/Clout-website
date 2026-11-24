@@ -20,7 +20,11 @@ window.addEventListener('load', function () {
     gap: '1.5rem',
     arrows: false,
     pagination: false,
-    height: '500px',
+    /* The curved black waves above/below the strip grow with the screen
+       width (~6.2vw each), so the slide height grows too (+12.5vw) to keep
+       the visible part of each image tall on wide monitors. Keep in sync
+       with .slider-main .splide__slide in /css/pages/index.css */
+    height: 'max(500px, calc(400px + 12.5vw))',
     autoScroll: {
       speed: 1,
       pauseOnHover: true,
@@ -28,12 +32,12 @@ window.addEventListener('load', function () {
     breakpoints: {
       992: {          // tablets
         perPage: 2,
-        height: '400px',
+        height: 'max(400px, calc(320px + 12.5vw))',
         gap: '1rem',
       },
       576: {          // mobile
         perPage: 1,
-        height: '300px',
+        height: 'max(300px, calc(260px + 12.5vw))',
         gap: '0.75rem',
       },
     },

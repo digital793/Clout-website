@@ -30,8 +30,9 @@
 .newsletter_mail:focus::placeholder {
   color: #2e2d2d;
 }
+/* height grows with screen width to offset the curved waves (see index.js) */
 .slider-main .splide__slide {
-  height: 500px;
+  height: max(500px, calc(400px + 12.5vw));
 }
 .slider-main .splide__slide img {
   width: 100%;
@@ -41,12 +42,12 @@
 }
 @media (max-width: 992px) {
   .slider-main .splide__slide {
-    height: 400px;
+    height: max(400px, calc(320px + 12.5vw));
   }
 }
 @media (max-width: 576px) {
   .slider-main .splide__slide {
-    height: 300px;
+    height: max(300px, calc(260px + 12.5vw));
   }
 }
 
