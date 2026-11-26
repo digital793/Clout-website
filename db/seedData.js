@@ -751,7 +751,7 @@ const defaultSeed = {
       "role": "MD - DRA Homes, Superchennai",
       "text": "Cloutgency understands what Gen-Z & Gen Alpha audience want, they bring fresh and vibrant ideas to life.",
       "video": "https://res.cloudinary.com/dlbbpz98x/video/upload/v1792994877/DRA_Ranjeeth_coloured_1.mp4_krk5hn.mp4",
-      "poster": "",
+      "poster": "https://res.cloudinary.com/dlbbpz98x/video/upload/so_1/v1792994877/DRA_Ranjeeth_coloured_1.mp4_krk5hn.jpg",
       "sortOrder": 1,
       "isActive": true
     },
@@ -762,7 +762,7 @@ const defaultSeed = {
       "role": "Founder - DR.B 360 DERMATOLOGY EXPERIENTIAL CENTER",
       "text": "Cloutgency delivered exactly what I envisioned for my clinic - creative, sharp, receptive. Two years in, and I've found family in this team",
       "video": "https://res.cloudinary.com/dlbbpz98x/video/upload/v1792992781/Dr.B_tesitimonial_i5ds8e.mp4",
-      "poster": "",
+      "poster": "https://res.cloudinary.com/dlbbpz98x/video/upload/so_1/v1792992781/Dr.B_tesitimonial_i5ds8e.jpg",
       "sortOrder": 2,
       "isActive": true
     },
@@ -773,7 +773,7 @@ const defaultSeed = {
       "role": "Co-Founder - Soft Serve.co",
       "text": "Cloutgency is doing a phenomenal job in the marketing game, their team of fresh & talented minds are easy to work with.",
       "video": "https://res.cloudinary.com/dlbbpz98x/video/upload/v1791349109/Soft_Serve_Testimony_jjpitp.mp4",
-      "poster": "",
+      "poster": "https://res.cloudinary.com/dlbbpz98x/video/upload/so_1/v1791349109/Soft_Serve_Testimony_jjpitp.jpg",
       "sortOrder": 3,
       "isActive": true
     },
@@ -784,7 +784,7 @@ const defaultSeed = {
       "role": "Head of Sales & Marketing - DRA Homes",
       "text": "Clout team made an exceptional job in scaling our social media presence in a very short time, it's been a fun & exciting journey with them.",
       "video": "https://res.cloudinary.com/dlbbpz98x/video/upload/v1791349132/dra_x_cloutgency_v1_jlmlsp.mp4",
-      "poster": "",
+      "poster": "https://res.cloudinary.com/dlbbpz98x/video/upload/so_1/v1791349132/dra_x_cloutgency_v1_jlmlsp.jpg",
       "sortOrder": 4,
       "isActive": true
     }

@@ -712,7 +712,7 @@ document.querySelectorAll('.video-mask-section video').forEach(video => {
     card.className = 'ch-card';
     card.dataset.index = i;
     card.innerHTML =
-      '<video class="ch-video" preload="metadata" playsinline src="' + t.video + '"></video>' +
+      '<video class="ch-video" preload="metadata" playsinline' + (t.poster ? ' poster="' + t.poster + '"' : '') + ' src="' + t.video + '"></video>' +
       '<div class="ch-play-btn" aria-hidden="true">' + PLAY_ICON_SVG + '</div>';
     stage.insertBefore(card, nextBtn);
     return card;
