@@ -173,6 +173,20 @@ const collectionMap = {
   team: { title: 'Team Members', key: 'team', priv: 'team' }
 };
 
+// Testimonials (Customer Stories) have their own page with Home / About Us tabs
+router.get('/collections/testimonials', requireAuth, requirePrivilege('testimonials'), (req, res) => {
+  const items = cmsStore.getCollection('testimonials')
+    .slice()
+    .sort((a, b) => (Number(a.sortOrder) || 0) - (Number(b.sortOrder) || 0));
+  res.render('admin/testimonials', {
+    title: 'Testimonials — Cloutgency CMS',
+    activeTab: 'testimonials',
+    user: req.session.user,
+    items,
+    tab: req.query.page === 'about' ? 'about' : 'home'
+  });
+});
+
 router.get('/collections/:type', requireAuth, (req, res, next) => {
   const type = req.params.type;
   const config = collectionMap[type];

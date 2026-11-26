@@ -524,60 +524,14 @@
      scroller). Add an object to add a video. Reorder objects to
      reorder the videos. Works with any count ≥ 2.
   ============================================================ */
-  const TESTIMONIALS = [
-    // Order matters: the carousel opens on the FIRST entry (centre),
-    // the second shows on its right and the LAST shows on its left.
-    // DRA / Superchennai is always featured first.
-    {
-      video: "/videos/testimonials/optimized/dra-ranjeeth-coloured-1.web.mp4",
-      poster: "/videos/testimonials/dra-ranjeeth-coloured-1.jpg",
-      text: "Cloutgency understands what Gen-Z & Gen Alpha audience want, they bring fresh and vibrant ideas to life.",
-      name: "Ranjeeth Rathod",
-      role: "MD - DRA Homes, Superchennai"
-    },
-    {
-      video: "/videos/testimonials/optimized/dr-b-testimonial.web.mp4",
-      poster: "/videos/testimonials/dr-b-testimonial.jpg",
-      text: "Cloutgency delivered exactly what I envisioned for my clinic - creative, sharp, receptive. Two years in, and I've found family in this team",
-      name: "Dr. Bhairavi Senthil",
-      role: "Founder - DR.B 360 DERMATOLOGY EXPERIENTIAL CENTER"
-    },
-    {
-      video: "/videos/testimonials/optimized/soft-serve-testimony.web.mp4",
-      poster: "/videos/testimonials/soft-serve-testimony.jpg",
-      text: "Cloutgency is doing a phenomenal job in the marketing game, their team of fresh & talented minds are easy to work with.",
-      name: "Anush Rajasekaran",
-      role: "Co-Founder - Soft Serve.co"
-    },
-    {
-      video: "/videos/testimonials/optimized/rajparis-testimonial-updated-version.web.mp4",
-      poster: "/videos/testimonials/rajparis-testimonial-updated-version.jpg",
-      text: "",
-      name: "Rajparis",
-      role: "Client testimonial"
-    },
-    {
-      video: "/videos/testimonials/optimized/murali-testimonial-final.web.mp4",
-      poster: "/videos/testimonials/murali-testimonial-final.jpg",
-      text: "",
-      name: "Murali",
-      role: "Client testimonial"
-    },
-    {
-      video: "/videos/testimonials/optimized/anantha-testimonial.web.mp4",
-      poster: "/videos/testimonials/anantha-testimonial.jpg",
-      text: "",
-      name: "Anantha",
-      role: "Client testimonial"
-    },
-    {
-      video: "/videos/testimonials/optimized/dra-x-cloutgency-v1.web.mp4",
-      poster: "/videos/testimonials/dra-x-cloutgency-v1.jpg",
-      text: "Clout team made an exceptional job in scaling our social media presence in a very short time, it's been a fun & exciting journey with them.",
-      name: "Manoj Vasudevan",
-      role: "Head of Sales & Marketing - DRA Homes"
-    }
-  ];
+  // Comes from the admin: Content Collections → Testimonials
+  const TESTIMONIALS = <%- JSON.stringify(typeof testimonials !== 'undefined' ? testimonials : []).replace(/</g, '\\u003c') %>;
+  if (!TESTIMONIALS.length) {
+    var chStageEl = document.getElementById('chStage');
+    var chSection = chStageEl && chStageEl.closest('section');
+    if (chSection) chSection.style.display = 'none';
+    return;
+  }
   const PLAY_ICON_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
   const PAUSE_ICON_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM15 5h4v14h-4z"/></svg>';
   const SOUND_ON_ICON_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';

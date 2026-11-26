@@ -693,32 +693,14 @@ document.querySelectorAll('.video-mask-section video').forEach(video => {
      scroller). Add an object to add a video. Reorder objects to
      reorder the videos. Works with any count ≥ 2.
   ============================================================ */
-  const TESTIMONIALS = [
-    {
-      video: "https://player.mediadelivery.net/play/765357/efb27562-e2d8-468e-99d0-aaac4b17942e",
-      text: "Cloutgency understands what Gen-Z & Gen Alpha audience want, they bring fresh and vibrant ideas to life.",
-      name: "Ranjith Rathod",
-      role: "MD - DRA Homes, Superchennai"
-    },
-    {
-      video: "https://player.mediadelivery.net/play/765357/0e6f9853-9033-4ec3-8d3a-d59a49d7acd0",
-      text: "Cloutgency delivered exactly what I envisioned for my clinic - creative, sharp, receptive. Two years in, and I've found family in this team",
-      name: "Dr. Bhairavi Senthil",
-      role: "Founder - DR.B 360 DERMATOLOGY EXPERIENTIAL CENTER"
-    },
-    {
-      video: "https://player.mediadelivery.net/play/765357/20af4702-4bd0-4b73-be19-ea3326f5ea19",
-      text: "Cloutgency is doing a phenomenal job in the marketing game, their team of fresh & talented minds are easy to work with.",
-      name: "Anush Rajasekaran",
-      role: "Co-Founder - Soft Serve.co"
-    },
-    {
-      video: "https://player.mediadelivery.net/play/765357/97ff7f03-fd70-4848-a8d5-93d5af3f99d9",
-      text: "Clout team made an exceptional job in scaling our social media presence in a very short time, it's been a fun & exciting journey with them.",
-      name: "Manoj Vasudevan",
-      role: "Head of Sales & Marketing - DRA Homes"
-    }
-  ];
+  // Comes from the admin: Content Collections → Testimonials
+  const TESTIMONIALS = <%- JSON.stringify(typeof testimonials !== 'undefined' ? testimonials : []).replace(/</g, '\\u003c') %>;
+  if (!TESTIMONIALS.length) {
+    var chStageEl = document.getElementById('chStage');
+    var chSection = chStageEl && chStageEl.closest('section');
+    if (chSection) chSection.style.display = 'none';
+    return;
+  }
   const PLAY_ICON_SVG  = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
   const TOTAL          = TESTIMONIALS.length;
   const stage  = document.getElementById('chStage');

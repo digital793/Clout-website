@@ -663,6 +663,131 @@ const defaultSeed = {
       sortOrder: 3,
       isActive: true
     }
+  ],
+
+  // Customer Stories videos (Content Collections → Testimonials). page = 'home' or 'about'
+  testimonials: [
+    {
+      "id": 1,
+      "page": "home",
+      "name": "Ranjeeth Rathod",
+      "role": "MD - DRA Homes, Superchennai",
+      "text": "Cloutgency understands what Gen-Z & Gen Alpha audience want, they bring fresh and vibrant ideas to life.",
+      "video": "/videos/testimonials/optimized/dra-ranjeeth-coloured-1.web.mp4",
+      "poster": "/videos/testimonials/dra-ranjeeth-coloured-1.jpg",
+      "sortOrder": 1,
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "page": "home",
+      "name": "Dr. Bhairavi Senthil",
+      "role": "Founder - DR.B 360 DERMATOLOGY EXPERIENTIAL CENTER",
+      "text": "Cloutgency delivered exactly what I envisioned for my clinic - creative, sharp, receptive. Two years in, and I've found family in this team",
+      "video": "/videos/testimonials/optimized/dr-b-testimonial.web.mp4",
+      "poster": "/videos/testimonials/dr-b-testimonial.jpg",
+      "sortOrder": 2,
+      "isActive": true
+    },
+    {
+      "id": 3,
+      "page": "home",
+      "name": "Anush Rajasekaran",
+      "role": "Co-Founder - Soft Serve.co",
+      "text": "Cloutgency is doing a phenomenal job in the marketing game, their team of fresh & talented minds are easy to work with.",
+      "video": "/videos/testimonials/optimized/soft-serve-testimony.web.mp4",
+      "poster": "/videos/testimonials/soft-serve-testimony.jpg",
+      "sortOrder": 3,
+      "isActive": true
+    },
+    {
+      "id": 4,
+      "page": "home",
+      "name": "Rajparis",
+      "role": "Client testimonial",
+      "text": "",
+      "video": "/videos/testimonials/optimized/rajparis-testimonial-updated-version.web.mp4",
+      "poster": "/videos/testimonials/rajparis-testimonial-updated-version.jpg",
+      "sortOrder": 4,
+      "isActive": true
+    },
+    {
+      "id": 5,
+      "page": "home",
+      "name": "Murali",
+      "role": "Client testimonial",
+      "text": "",
+      "video": "/videos/testimonials/optimized/murali-testimonial-final.web.mp4",
+      "poster": "/videos/testimonials/murali-testimonial-final.jpg",
+      "sortOrder": 5,
+      "isActive": true
+    },
+    {
+      "id": 6,
+      "page": "home",
+      "name": "Anantha",
+      "role": "Client testimonial",
+      "text": "",
+      "video": "/videos/testimonials/optimized/anantha-testimonial.web.mp4",
+      "poster": "/videos/testimonials/anantha-testimonial.jpg",
+      "sortOrder": 6,
+      "isActive": true
+    },
+    {
+      "id": 7,
+      "page": "home",
+      "name": "Manoj Vasudevan",
+      "role": "Head of Sales & Marketing - DRA Homes",
+      "text": "Clout team made an exceptional job in scaling our social media presence in a very short time, it's been a fun & exciting journey with them.",
+      "video": "/videos/testimonials/optimized/dra-x-cloutgency-v1.web.mp4",
+      "poster": "/videos/testimonials/dra-x-cloutgency-v1.jpg",
+      "sortOrder": 7,
+      "isActive": true
+    },
+    {
+      "id": 8,
+      "page": "about",
+      "name": "Ranjith Rathod",
+      "role": "MD - DRA Homes, Superchennai",
+      "text": "Cloutgency understands what Gen-Z & Gen Alpha audience want, they bring fresh and vibrant ideas to life.",
+      "video": "https://player.mediadelivery.net/play/765357/efb27562-e2d8-468e-99d0-aaac4b17942e",
+      "poster": "",
+      "sortOrder": 1,
+      "isActive": true
+    },
+    {
+      "id": 9,
+      "page": "about",
+      "name": "Dr. Bhairavi Senthil",
+      "role": "Founder - DR.B 360 DERMATOLOGY EXPERIENTIAL CENTER",
+      "text": "Cloutgency delivered exactly what I envisioned for my clinic - creative, sharp, receptive. Two years in, and I've found family in this team",
+      "video": "https://player.mediadelivery.net/play/765357/0e6f9853-9033-4ec3-8d3a-d59a49d7acd0",
+      "poster": "",
+      "sortOrder": 2,
+      "isActive": true
+    },
+    {
+      "id": 10,
+      "page": "about",
+      "name": "Anush Rajasekaran",
+      "role": "Co-Founder - Soft Serve.co",
+      "text": "Cloutgency is doing a phenomenal job in the marketing game, their team of fresh & talented minds are easy to work with.",
+      "video": "https://player.mediadelivery.net/play/765357/20af4702-4bd0-4b73-be19-ea3326f5ea19",
+      "poster": "",
+      "sortOrder": 3,
+      "isActive": true
+    },
+    {
+      "id": 11,
+      "page": "about",
+      "name": "Manoj Vasudevan",
+      "role": "Head of Sales & Marketing - DRA Homes",
+      "text": "Clout team made an exceptional job in scaling our social media presence in a very short time, it's been a fun & exciting journey with them.",
+      "video": "https://player.mediadelivery.net/play/765357/97ff7f03-fd70-4848-a8d5-93d5af3f99d9",
+      "poster": "",
+      "sortOrder": 4,
+      "isActive": true
+    }
   ]
 };
 

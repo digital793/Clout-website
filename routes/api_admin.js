@@ -91,8 +91,13 @@ const keyToPrivilege = {
   works: 'works',
   caseStudies: 'case_studies',
   blogs: 'blogs',
-  team: 'team'
+  team: 'team',
+  testimonials: 'testimonials'
 };
+
+// Video: a file in /videos/ or a full https link. Cover image: /images/ or /videos/ path, or https link.
+const isVideoRef = v => /^\/videos\/[^"<>\s]+$/.test(v) || /^https:\/\/[^"<>\s]+$/.test(v);
+const isPosterRef = v => /^\/(images|videos)\/[^"<>\s]+$/.test(v) || /^https:\/\/[^"<>\s]+$/.test(v);
 
 router.post('/collections/:key', requireAuth, async (req, res, next) => {
   const key = req.params.key;
@@ -264,6 +269,41 @@ router.post('/collections/:key', requireAuth, async (req, res, next) => {
           itemData.sortOrder = existingTeam.reduce((max, m) => Math.max(max, Number(m.sortOrder) || Number(m.id) || 0), 0) + 1;
         }
       }
+      if (key === 'testimonials') {
+        const page = String(req.body.page || '');
+        const name = String(req.body.name || '').trim();
+        const role = String(req.body.role || '').trim();
+        const text = String(req.body.text || '').trim();
+        const video = String(req.body.video || '').trim();
+        const poster = String(req.body.poster || '').trim();
+
+        if (page !== 'home' && page !== 'about') {
+          return res.status(400).json({ success: false, error: 'Choose which page this testimonial is for.' });
+        }
+        if (!name) return res.status(400).json({ success: false, error: 'Name is required.' });
+        if (!video || !isVideoRef(video)) {
+          return res.status(400).json({ success: false, error: 'Add a video: upload one, or use a /videos/ path or https link.' });
+        }
+        if (poster && !isPosterRef(poster)) {
+          return res.status(400).json({ success: false, error: 'Cover image must be an /images/ or /videos/ path, or an https link.' });
+        }
+        if (name.length > 120 || role.length > 200 || text.length > 1000) {
+          return res.status(400).json({ success: false, error: 'Keep the name under 120 characters, role under 200 and quote under 1000.' });
+        }
+
+        itemData = {
+          id: req.body.id ? Number(req.body.id) : undefined,
+          page, name, role, text, video, poster,
+          isActive: req.body.isActive !== false && req.body.isActive !== 'false'
+        };
+        const order = Number(req.body.sortOrder);
+        if (Number.isFinite(order) && order > 0) itemData.sortOrder = order;
+        if (!itemData.id && !itemData.sortOrder) {
+          itemData.sortOrder = cmsStore.getCollection('testimonials')
+            .filter(t => t.page === page)
+            .reduce((max, t) => Math.max(max, Number(t.sortOrder) || 0), 0) + 1;
+        }
+      }
       const saved = await cmsStore.saveItem(key, itemData);
       res.json({ success: true, message: 'Item saved successfully', data: saved });
     } catch (err) {
@@ -293,6 +333,19 @@ router.post('/works/upload/:type', requireAuth, requirePrivilege('works'), (req,
       filename: req.file.filename,
       size: req.file.size
     });
+  });
+});
+
+router.post('/testimonials/upload/:type', requireAuth, requirePrivilege('testimonials'), (req, res) => {
+  const { type } = req.params;
+  if (type !== 'image' && type !== 'video') {
+    return res.status(400).json({ success: false, error: 'Upload type must be image or video.' });
+  }
+  upload.createWorkUpload(type, 'testimonials').single('file')(req, res, error => {
+    if (error) return res.status(400).json({ success: false, error: error.message });
+    if (!req.file) return res.status(400).json({ success: false, error: 'Choose a file to upload.' });
+    const folder = type === 'image' ? 'images' : 'videos';
+    res.json({ success: true, url: `/${folder}/testimonials/${req.file.filename}`, size: req.file.size });
   });
 });
 

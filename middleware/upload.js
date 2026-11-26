@@ -38,14 +38,14 @@ const upload = multer({
   fileFilter
 });
 
-function createWorkUpload(type) {
+function createWorkUpload(type, folder = 'works') {
   const isImage = type === 'image';
   const uploadDir = path.join(
     __dirname,
     '..',
     'public',
     isImage ? 'images' : 'videos',
-    'works'
+    folder
   );
   const allowedTypes = isImage
     ? new Map([

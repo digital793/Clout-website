@@ -98,6 +98,7 @@ function loadJsonStore() {
             'case_studies',
             'blogs',
             'team',
+            'testimonials',
             'assets',
             'users'
           ],
@@ -329,7 +330,8 @@ const cmsStore = {
 
   async saveItem(collectionName, item) {
     const data = loadJsonStore();
-    if (!data[collectionName]) data[collectionName] = [];
+    // a collection added after the store was created starts from its seed entries
+    if (!data[collectionName]) data[collectionName] = JSON.parse(JSON.stringify(defaultSeed[collectionName] || []));
 
     let updatedItem = null;
     if (item.id) {
@@ -352,7 +354,10 @@ const cmsStore = {
 
   async deleteItem(collectionName, id) {
     const data = loadJsonStore();
-    if (!data[collectionName]) return false;
+    if (!data[collectionName]) {
+      if (!defaultSeed[collectionName]) return false;
+      data[collectionName] = JSON.parse(JSON.stringify(defaultSeed[collectionName]));
+    }
     const initialLen = data[collectionName].length;
     data[collectionName] = data[collectionName].filter(x => String(x.id) !== String(id));
     saveJsonStore(data);

@@ -6,6 +6,14 @@ const path = require('path');
 const cmsStore = require('../db/cmsStore');
 const workCategories = require('../constants/workCategories');
 const { renderWithEdits } = require('../middleware/pageContent');
+
+// Customer Stories for one page ('home' or 'about'), from Content Collections → Testimonials
+function getTestimonials(page) {
+  return cmsStore.getCollection('testimonials')
+    .filter(t => t.page === page && t.isActive !== false && t.video)
+    .sort((a, b) => (Number(a.sortOrder) || 0) - (Number(b.sortOrder) || 0))
+    .map(t => ({ video: t.video, poster: t.poster || '', text: t.text || '', name: t.name || '', role: t.role || '' }));
+}
 const router = express.Router();
 
 // ─── Shared dynamic page meta builder ────────────────────────────────────────
@@ -110,6 +118,7 @@ router.get('/', (req, res) => {
   pageData.works = cmsStore.getCollection('works')
     .filter(work => work.isActive !== false && work.showOnHome)
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  pageData.testimonials = getTestimonials('home');
   renderWithEdits(res, 'index', pageData, 'home');
 });
 
@@ -123,6 +132,7 @@ router.get('/about-us', (req, res) => {
   pageData.team = cmsStore.getCollection('team')
     .filter(member => member.isActive !== false)
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  pageData.testimonials = getTestimonials('about');
   renderWithEdits(res, 'about-us', pageData, 'about');
 });
 

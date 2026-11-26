@@ -1,0 +1,259 @@
+<%- include('layout', {
+  body: `
+  <style>
+    .t-head { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
+    .t-head h2 { font-size:22px; font-weight:800; color:#fff; }
+    .t-head p { font-size:12px; color:var(--text-muted); margin-top:2px; }
+    .t-tabs { display:flex; gap:10px; margin-bottom:22px; }
+    .t-tab { padding:9px 18px; border-radius:999px; border:1px solid var(--border-subtle); background:rgba(255,255,255,.03);
+      color:var(--text-muted); font-size:13px; font-weight:700; cursor:pointer; }
+    .t-tab.active { background:var(--gold); color:#000; border-color:var(--gold); }
+    .t-tab .count { opacity:.7; margin-left:6px; }
+    .t-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:20px; }
+    .t-card { background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-md); overflow:hidden; display:flex; flex-direction:column; transition:var(--transition); }
+    .t-card:hover { border-color:var(--border-gold); transform:translateY(-2px); }
+    .t-card.hidden-item { opacity:.5; }
+    .t-media { position:relative; aspect-ratio:3/4; max-height:300px; background:#0a090e; overflow:hidden; }
+    .t-media img, .t-media video { width:100%; height:100%; object-fit:cover; display:block; }
+    .t-order { position:absolute; top:10px; left:10px; background:rgba(0,0,0,.8); color:var(--gold); font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px; border:1px solid rgba(255,215,0,.35); }
+    .t-flag { position:absolute; top:10px; right:10px; background:rgba(0,0,0,.8); color:#ff6b6b; font-size:10px; font-weight:800; padding:3px 8px; border-radius:6px; }
+    .t-body { padding:16px; display:flex; flex-direction:column; flex:1; }
+    .t-name { font-size:15px; font-weight:800; color:#fff; }
+    .t-role { font-size:11px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.06em; margin:4px 0 8px; }
+    .t-quote { font-size:12px; color:var(--text-muted); line-height:1.5; flex:1; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin-bottom:14px; }
+    .t-quote.empty { font-style:italic; opacity:.6; }
+    .t-actions { display:flex; gap:8px; padding-top:12px; border-top:1px solid var(--border-subtle); }
+    .t-empty { text-align:center; padding:60px 24px; }
+    .t-form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media (max-width:640px) { .t-form-row { grid-template-columns:1fr; } }
+    .t-upload { display:flex; gap:10px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+    .t-preview { margin-top:10px; width:140px; aspect-ratio:3/4; border-radius:8px; overflow:hidden; background:#0a090e; border:1px solid var(--border-subtle); display:none; }
+    .t-preview img, .t-preview video { width:100%; height:100%; object-fit:cover; }
+    .t-hint { font-size:11.5px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
+    .t-switch { display:flex; align-items:center; gap:10px; font-size:13px; color:#fff; cursor:pointer; }
+    .t-btn-secondary { background:rgba(255,255,255,.05); border:1px solid var(--border-subtle); color:#fff; border-radius:999px; padding:9px 16px; font-weight:700; font-size:13px; cursor:pointer; }
+  </style>
+
+  <div class="t-head">
+    <div>
+      <h2>Testimonials</h2>
+      <p>Customer Stories videos and quotes. Home and About Us each have their own list.</p>
+    </div>
+    <button type="button" class="btn-action-gold" id="btnNew">+ Add New Entry</button>
+  </div>
+
+  <div class="t-tabs" role="tablist">
+    <button type="button" class="t-tab" data-tab="home">Home page<span class="count" id="countHome"></span></button>
+    <button type="button" class="t-tab" data-tab="about">About Us page<span class="count" id="countAbout"></span></button>
+  </div>
+
+  <div id="tList"></div>
+
+  <div class="modal-backdrop" id="tModal">
+    <div class="modal-box" style="max-width:720px;">
+      <h3 style="font-size:18px;font-weight:800;color:#fff;margin-bottom:18px;" id="tModalTitle">Add testimonial</h3>
+      <form id="tForm" autocomplete="off">
+        <input type="hidden" id="fId">
+        <div class="t-form-row">
+          <div class="form-group">
+            <label class="form-label">Show on page *</label>
+            <select class="form-control" id="fPage">
+              <option value="home">Home page</option>
+              <option value="about">About Us page</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Position in the list</label>
+            <input type="number" class="form-control" id="fOrder" min="1" step="1" placeholder="e.g. 1 = shown first">
+          </div>
+        </div>
+        <div class="t-form-row">
+          <div class="form-group">
+            <label class="form-label">Name *</label>
+            <input type="text" class="form-control" id="fName" maxlength="120" placeholder="e.g. Ranjeeth Rathod">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role / company</label>
+            <input type="text" class="form-control" id="fRole" maxlength="200" placeholder="e.g. MD - DRA Homes">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Quote (shown under the video)</label>
+          <textarea class="form-control" id="fText" rows="3" maxlength="1000" placeholder="What the client said"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Video *</label>
+          <input type="text" class="form-control" id="fVideo" placeholder="/videos/testimonials/... or https://...">
+          <div class="t-upload">
+            <button type="button" class="t-btn-secondary" id="btnUpVideo">Upload video</button>
+            <input type="file" id="fileVideo" accept="video/mp4,video/webm" hidden>
+            <span class="t-hint" id="upVideoMsg">MP4 or WebM. Compress it for the web first so it loads fast.</span>
+          </div>
+          <div class="t-preview" id="prevVideo"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cover image (shown before the video plays)</label>
+          <input type="text" class="form-control" id="fPoster" placeholder="/images/... or /videos/....jpg">
+          <div class="t-upload">
+            <button type="button" class="t-btn-secondary" id="btnUpPoster">Upload image</button>
+            <input type="file" id="filePoster" accept="image/jpeg,image/png,image/webp" hidden>
+          </div>
+          <div class="t-preview" id="prevPoster"></div>
+        </div>
+        <label class="t-switch"><input type="checkbox" id="fActive" checked> Show this testimonial on the site</label>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px;">
+          <button type="button" class="t-btn-secondary" id="btnCancel">Cancel</button>
+          <button type="submit" class="btn-action-gold" id="btnSave">Save Entry ✦</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    var ITEMS = ${JSON.stringify(items).replace(/</g, '\\u003c')};
+    var tab = ${JSON.stringify(tab)};
+    var list = document.getElementById('tList');
+    var modal = document.getElementById('tModal');
+    var $ = function (id) { return document.getElementById(id); };
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function isVideoFile(u) { return /^\\/videos\\//.test(u || '') || /\\.(mp4|webm)(\\?|$)/i.test(u || ''); }
+
+    function render() {
+      document.querySelectorAll('.t-tab').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === tab); });
+      $('countHome').textContent = '(' + ITEMS.filter(function (t) { return t.page === 'home'; }).length + ')';
+      $('countAbout').textContent = '(' + ITEMS.filter(function (t) { return t.page === 'about'; }).length + ')';
+      var rows = ITEMS.filter(function (t) { return t.page === tab; });
+      if (!rows.length) {
+        list.innerHTML = '<div class="glass-panel t-empty"><p style="font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;">No testimonials on this page yet</p>' +
+          '<p style="font-size:12px;color:var(--text-muted);margin-bottom:18px;">The Customer Stories section is hidden on this page until you add one.</p>' +
+          '<button type="button" class="btn-action-gold" onclick="document.getElementById(\\'btnNew\\').click()">+ Add First Entry</button></div>';
+        return;
+      }
+      list.innerHTML = '<div class="t-grid">' + rows.map(function (t, i) {
+        var media = t.poster ? '<img src="' + esc(t.poster) + '" alt="" loading="lazy">'
+          : isVideoFile(t.video) ? '<video src="' + esc(t.video) + '#t=0.5" muted preload="metadata"></video>'
+          : '<div class="no-img" style="display:grid;place-items:center;height:100%;color:var(--text-dim);font-size:11px;">No cover image</div>';
+        return '<div class="t-card' + (t.isActive === false ? ' hidden-item' : '') + '">' +
+          '<div class="t-media">' + media + '<span class="t-order">#' + (i + 1) + '</span>' +
+          (t.isActive === false ? '<span class="t-flag">HIDDEN</span>' : '') + '</div>' +
+          '<div class="t-body"><div class="t-name">' + esc(t.name) + '</div>' +
+          '<div class="t-role">' + esc(t.role || '—') + '</div>' +
+          '<p class="t-quote' + (t.text ? '' : ' empty') + '">' + esc(t.text || 'No quote yet') + '</p>' +
+          '<div class="t-actions"><button type="button" class="btn-edit-item" style="flex:1;" data-edit="' + t.id + '">Edit ✎</button>' +
+          '<button type="button" class="btn-del-item" data-del="' + t.id + '" title="Delete">✕</button></div></div></div>';
+      }).join('') + '</div>';
+    }
+
+    document.querySelectorAll('.t-tab').forEach(function (b) {
+      b.addEventListener('click', function () {
+        tab = b.dataset.tab; render();
+        history.replaceState(null, '', '?page=' + tab);
+      });
+    });
+
+    function preview(boxId, url, kind) {
+      var box = $(boxId);
+      if (!url) { box.style.display = 'none'; box.innerHTML = ''; return; }
+      box.style.display = 'block';
+      box.innerHTML = kind === 'video' && isVideoFile(url)
+        ? '<video src="' + esc(url) + '#t=0.5" muted controls preload="metadata"></video>'
+        : kind === 'video' ? '<div style="padding:10px;font-size:11px;color:var(--text-muted);">External link — preview not shown</div>'
+        : '<img src="' + esc(url) + '" alt="">';
+    }
+
+    function openModal(item) {
+      item = item || {};
+      $('tModalTitle').textContent = item.id ? 'Edit testimonial' : 'Add testimonial';
+      $('fId').value = item.id || '';
+      $('fPage').value = item.page || tab;
+      $('fOrder').value = item.sortOrder || '';
+      $('fName').value = item.name || '';
+      $('fRole').value = item.role || '';
+      $('fText').value = item.text || '';
+      $('fVideo').value = item.video || '';
+      $('fPoster').value = item.poster || '';
+      $('fActive').checked = item.isActive !== false;
+      preview('prevVideo', item.video, 'video');
+      preview('prevPoster', item.poster, 'image');
+      modal.classList.add('show');
+    }
+    function closeModal() { modal.classList.remove('show'); }
+    $('btnNew').addEventListener('click', function () { openModal(null); });
+    $('btnCancel').addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    $('fVideo').addEventListener('change', function () { preview('prevVideo', this.value.trim(), 'video'); });
+    $('fPoster').addEventListener('change', function () { preview('prevPoster', this.value.trim(), 'image'); });
+
+    list.addEventListener('click', function (e) {
+      var ed = e.target.closest('[data-edit]');
+      var del = e.target.closest('[data-del]');
+      if (ed) openModal(ITEMS.find(function (t) { return String(t.id) === ed.dataset.edit; }));
+      if (del) removeItem(del.dataset.del);
+    });
+
+    function upload(kind, file, input, boxId, btn, msgEl) {
+      var label = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Uploading…';
+      var fd = new FormData(); fd.append('file', file);
+      fetch('/api/admin/testimonials/upload/' + kind, { method: 'POST', body: fd, headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (!res.success) throw new Error(res.error || 'Upload failed');
+          input.value = res.url;
+          preview(boxId, res.url, kind === 'video' ? 'video' : 'image');
+          showToast(kind === 'video' ? 'Video uploaded' : 'Image uploaded');
+        })
+        .catch(function (err) { showToast(err.message, true); })
+        .finally(function () { btn.disabled = false; btn.textContent = label; });
+    }
+    $('btnUpVideo').addEventListener('click', function () { $('fileVideo').click(); });
+    $('btnUpPoster').addEventListener('click', function () { $('filePoster').click(); });
+    $('fileVideo').addEventListener('change', function () { if (this.files[0]) upload('video', this.files[0], $('fVideo'), 'prevVideo', $('btnUpVideo')); this.value = ''; });
+    $('filePoster').addEventListener('change', function () { if (this.files[0]) upload('image', this.files[0], $('fPoster'), 'prevPoster', $('btnUpPoster')); this.value = ''; });
+
+    $('tForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var payload = {
+        id: $('fId').value || undefined,
+        page: $('fPage').value,
+        sortOrder: $('fOrder').value,
+        name: $('fName').value.trim(),
+        role: $('fRole').value.trim(),
+        text: $('fText').value.trim(),
+        video: $('fVideo').value.trim(),
+        poster: $('fPoster').value.trim(),
+        isActive: $('fActive').checked
+      };
+      if (!payload.name) { showToast('Add a name', true); return; }
+      if (!payload.video) { showToast('Add a video (upload or link)', true); return; }
+      var btn = $('btnSave'); btn.disabled = true; btn.textContent = 'Saving…';
+      fetch('/api/admin/collections/testimonials', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload)
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (!res.success) throw new Error(res.error || 'Save failed');
+          showToast('Saved — the site is updated');
+          setTimeout(function () { location.href = '?page=' + payload.page; }, 500);
+        })
+        .catch(function (err) { showToast(err.message, true); btn.disabled = false; btn.textContent = 'Save Entry ✦'; });
+    });
+
+    function removeItem(id) {
+      var item = ITEMS.find(function (t) { return String(t.id) === String(id); });
+      if (!confirm('Delete the testimonial from ' + (item ? item.name : 'this client') + '? This cannot be undone. (To just hide it, use Edit and untick "Show".)')) return;
+      fetch('/api/admin/collections/testimonials/' + id, { method: 'DELETE', headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (!res.success) throw new Error(res.error || 'Delete failed');
+          ITEMS = ITEMS.filter(function (t) { return String(t.id) !== String(id); });
+          render(); showToast('Testimonial deleted');
+        })
+        .catch(function (err) { showToast(err.message, true); });
+    }
+
+    render();
+  })();
+  </script>
+`}) %>
