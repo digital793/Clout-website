@@ -1,0 +1,60 @@
+<%- include('layout', {
+  body: `
+  <style>
+    .pages-head { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
+    .pages-head h2 { font-size:22px; font-weight:800; color:#fff; letter-spacing:.04em; text-transform:uppercase; }
+    .pages-head p { font-size:12px; color:var(--text-muted); margin-top:4px; }
+    .pages-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:24px; }
+    @media (max-width: 1024px) { .pages-grid { grid-template-columns:1fr; } }
+    .page-card { display:flex; flex-direction:column; gap:14px; min-height:210px; }
+    .page-card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .page-card-name { display:flex; align-items:center; gap:10px; font-size:18px; font-weight:800; color:#fff; }
+    .page-card-name svg { width:20px; height:20px; stroke:var(--gold); stroke-width:2; flex-shrink:0; }
+    .page-route { display:inline-block; font-family:ui-monospace, Menlo, Consolas, monospace; font-size:12px; color:var(--gold);
+      background:rgba(255,215,0,.08); border:1px solid var(--border-gold); border-radius:6px; padding:3px 8px; width:fit-content; }
+    .page-status { font-size:11px; font-weight:700; color:#2ed573; background:rgba(46,213,115,.1); border:1px solid rgba(46,213,115,.35);
+      border-radius:999px; padding:4px 10px; white-space:nowrap; }
+    .page-desc { font-size:13px; color:var(--text-muted); line-height:1.55; }
+    .page-card-foot { margin-top:auto; padding-top:16px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+    .page-view-link { font-size:12.5px; color:var(--text-muted); text-decoration:none; }
+    .page-view-link:hover { color:var(--gold); }
+    .studio-placeholder { text-align:center; padding:56px 24px; }
+    .studio-placeholder h3 { font-size:20px; font-weight:800; color:#fff; margin-bottom:8px; }
+    .studio-placeholder p { font-size:13px; color:var(--text-muted); margin-bottom:22px; }
+  </style>
+
+  ${studioPage ? `
+  <div class="glass-panel gold-accent studio-placeholder">
+    <h3>${studioPage.name} Studio</h3>
+    <p>The visual editor for this page is being built and will open here.</p>
+    <a href="/admin/pages" class="btn-action-gold">&larr; Back to Pages</a>
+  </div>
+  ` : `
+  <div class="pages-head">
+    <div>
+      <h2>Pages Editor</h2>
+      <p>Pick a page and open it in the studio to edit its text and images. Publishing updates the site this admin runs on.</p>
+    </div>
+  </div>
+
+  <div class="pages-grid">
+    ${pages.map(p => `
+    <div class="glass-panel page-card">
+      <div class="page-card-top">
+        <div class="page-card-name">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          <span>${p.name}</span>
+        </div>
+        <span class="page-status">Published</span>
+      </div>
+      <span class="page-route">${p.path}</span>
+      <p class="page-desc">${p.description}</p>
+      <div class="page-card-foot">
+        <a href="${p.path}" target="_blank" class="page-view-link">View page &#8599;</a>
+        <a href="/admin/pages/${p.slug}" class="btn-action-gold">Open in Studio &#9998;</a>
+      </div>
+    </div>
+    `).join('')}
+  </div>
+  `}
+`}) %>

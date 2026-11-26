@@ -110,9 +110,34 @@ router.get('/dashboard', requireAuth, requirePrivilege('dashboard'), async (req,
 });
 
 
-// ─── Page Editor (Disabled) — content managed through code ───────────────────
-router.get('/pages', requireAuth, (req, res) => res.redirect('/admin/dashboard'));
-router.get('/pages/:slug', requireAuth, (req, res) => res.redirect('/admin/dashboard'));
+// ─── Pages Editor — Home and About Us only ───────────────────────────────────
+const editablePages = [
+  { slug: 'home', name: 'Home Page', path: '/', description: 'Hero, services, works, testimonials and newsletter text and images.' },
+  { slug: 'about', name: 'About Us', path: '/about-us', description: 'Story, values, team intro and page text and images.' }
+];
+
+router.get('/pages', requireAuth, requirePrivilege('pages'), (req, res) => {
+  res.render('admin/pages', {
+    title: 'Pages Editor — Cloutgency CMS',
+    activeTab: 'pages',
+    user: req.session.user,
+    pages: editablePages,
+    studioPage: null
+  });
+});
+
+// Studio is built in the next step; until then show a placeholder inside the admin.
+router.get('/pages/:slug', requireAuth, requirePrivilege('pages'), (req, res) => {
+  const page = editablePages.find(p => p.slug === req.params.slug);
+  if (!page) return res.redirect('/admin/pages');
+  res.render('admin/pages', {
+    title: `${page.name} Studio — Cloutgency CMS`,
+    activeTab: 'pages',
+    user: req.session.user,
+    pages: editablePages,
+    studioPage: page
+  });
+});
 
 
 // ─── SEO Settings ────────────────────────────────────────────────────────────
