@@ -53,6 +53,7 @@ function applyEdits(html, edits) {
       if (tagStart === -1 || openEnd === -1 || !tagName) { from = idx + marker.length; continue; }
       const openTag = html.slice(tagStart, openEnd + 1);
       const type = (openTag.match(/data-cms-type="([^"]+)"/) || [])[1] || 'text';
+      if (type === 'link') { from = openEnd + 1; continue; } // edited elsewhere in the admin, never here
 
       if (type === 'image') {
         const url = safeImageUrl(edits[key]);

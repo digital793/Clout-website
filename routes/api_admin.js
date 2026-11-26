@@ -92,7 +92,8 @@ const keyToPrivilege = {
   caseStudies: 'case_studies',
   blogs: 'blogs',
   team: 'team',
-  testimonials: 'testimonials'
+  testimonials: 'testimonials',
+  serviceCube: 'services'
 };
 
 // Video: a file in /videos/ or a full https link. Cover image: /images/ or /videos/ path, or https link.
@@ -269,6 +270,38 @@ router.post('/collections/:key', requireAuth, async (req, res, next) => {
           itemData.sortOrder = existingTeam.reduce((max, m) => Math.max(max, Number(m.sortOrder) || Number(m.id) || 0), 0) + 1;
         }
       }
+      if (key === 'serviceCube') {
+        const name = String(req.body.name || '').trim();
+        const line = String(req.body.line || '').trim();
+        const media = String(req.body.media || '').trim();
+        const poster = String(req.body.poster || '').trim();
+        const alt = String(req.body.alt || '').trim();
+        const points = (Array.isArray(req.body.points) ? req.body.points : String(req.body.points || '').split(/\r?\n/))
+          .map(p => String(p).trim()).filter(Boolean);
+
+        if (!name) return res.status(400).json({ success: false, error: 'Service name is required.' });
+        if (!media || !(/^\/(videos|images)\/[^"<>\s]+$/.test(media) || /^https:\/\/[^"<>\s]+$/.test(media))) {
+          return res.status(400).json({ success: false, error: 'Add a video or image: upload one, or use a /videos/ or /images/ path or https link.' });
+        }
+        if (poster && !isPosterRef(poster)) {
+          return res.status(400).json({ success: false, error: 'Cover image must be an /images/ or /videos/ path, or an https link.' });
+        }
+        if (name.length > 60 || line.length > 200 || points.length > 8 || points.some(p => p.length > 40)) {
+          return res.status(400).json({ success: false, error: 'Keep the name under 60 characters, the line under 200, and up to 8 points of 40 characters each.' });
+        }
+
+        itemData = {
+          id: req.body.id ? Number(req.body.id) : undefined,
+          name, line, points, media, poster, alt,
+          isActive: req.body.isActive !== false && req.body.isActive !== 'false'
+        };
+        const order = Number(req.body.sortOrder);
+        if (Number.isFinite(order) && order > 0) itemData.sortOrder = order;
+        if (!itemData.id && !itemData.sortOrder) {
+          itemData.sortOrder = cmsStore.getCollection('serviceCube')
+            .reduce((max, s) => Math.max(max, Number(s.sortOrder) || 0), 0) + 1;
+        }
+      }
       if (key === 'testimonials') {
         const page = String(req.body.page || '');
         const name = String(req.body.name || '').trim();
@@ -346,6 +379,19 @@ router.post('/testimonials/upload/:type', requireAuth, requirePrivilege('testimo
     if (!req.file) return res.status(400).json({ success: false, error: 'Choose a file to upload.' });
     const folder = type === 'image' ? 'images' : 'videos';
     res.json({ success: true, url: `/${folder}/testimonials/${req.file.filename}`, size: req.file.size });
+  });
+});
+
+router.post('/services/upload/:type', requireAuth, requirePrivilege('services'), (req, res) => {
+  const { type } = req.params;
+  if (type !== 'image' && type !== 'video') {
+    return res.status(400).json({ success: false, error: 'Upload type must be image or video.' });
+  }
+  upload.createWorkUpload(type, 'services').single('file')(req, res, error => {
+    if (error) return res.status(400).json({ success: false, error: error.message });
+    if (!req.file) return res.status(400).json({ success: false, error: 'Choose a file to upload.' });
+    const folder = type === 'image' ? 'images' : 'videos';
+    res.json({ success: true, url: `/${folder}/services/${req.file.filename}`, size: req.file.size });
   });
 });
 

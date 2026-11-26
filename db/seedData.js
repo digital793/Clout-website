@@ -788,6 +788,90 @@ const defaultSeed = {
       "sortOrder": 4,
       "isActive": true
     }
+  ],
+
+  // Homepage services cube (Content Collections → Services)
+  serviceCube: [
+    {
+      "id": 1,
+      "name": "Branding",
+      "line": "Identity built to convert, not just look pretty.",
+      "points": [
+        "Identity",
+        "Strategy",
+        "Positioning",
+        "Guidelines"
+      ],
+      "media": "/videos/clout-SEO_mp4.mp4",
+      "poster": "/videos/clout-SEO_poster.0000000.jpg",
+      "alt": "Branding work",
+      "sortOrder": 1,
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "name": "Digital Marketing",
+      "line": "Culture moves fast. We build presence that keeps pace.",
+      "points": [
+        "Social Media",
+        "Strategy",
+        "Content Calendar",
+        "Community Mgmt"
+      ],
+      "media": "/videos/digital-marketing_1_mp4.mp4",
+      "poster": "/videos/digital-marketing_1_poster.0000000.jpg",
+      "alt": "Digital marketing work",
+      "sortOrder": 2,
+      "isActive": true
+    },
+    {
+      "id": 3,
+      "name": "Content Creation",
+      "line": "Scroll speed is brutal. Our content survives it.",
+      "points": [
+        "Video Production",
+        "Photography",
+        "Motion Graphics",
+        "Copywriting"
+      ],
+      "media": "/videos/digital-marketing_1_mp4.mp4",
+      "poster": "/videos/digital-marketing_1_poster.0000000.jpg",
+      "alt": "Content creation work",
+      "sortOrder": 3,
+      "isActive": true
+    },
+    {
+      "id": 4,
+      "name": "Performance Marketing",
+      "line": "Anyone can get clicks. We get customers.",
+      "points": [
+        "Meta & Google Ads",
+        "Funnel Optimization",
+        "E-Commerce",
+        "AI Automation"
+      ],
+      "media": "/videos/performace-marketing_mp4.mp4",
+      "poster": "/videos/performace-marketing_poster.0000000.jpg",
+      "alt": "Performance marketing work",
+      "sortOrder": 4,
+      "isActive": true
+    },
+    {
+      "id": 5,
+      "name": "Web Design",
+      "line": "Your site is judged in 3 seconds. We make them count.",
+      "points": [
+        "UI/UX",
+        "Development",
+        "CRO",
+        "SEO"
+      ],
+      "media": "/videos/Web_mp4.mp4",
+      "poster": "/videos/Web_poster.0000000.jpg",
+      "alt": "Web design work",
+      "sortOrder": 5,
+      "isActive": true
+    }
   ]
 };
 

@@ -239,7 +239,7 @@
       return '<div class="nav-section"><div class="nav-section-head">' + esc(SECTION_NAMES[sec] || sec) + '</div>' +
         groups[sec].map(function (key) {
           var f = fields[key];
-          var tag = f.type === 'image' ? 'IMG' : f.type === 'gallery' ? 'IMGS' : f.type === 'list' ? 'LIST' : 'TXT';
+          var tag = f.type === 'image' ? 'IMG' : f.type === 'gallery' ? 'IMGS' : f.type === 'list' ? 'LIST' : f.type === 'link' ? 'LINK' : 'TXT';
           return '<button type="button" class="nav-item" data-key="' + esc(key) + '"><span>' + esc(f.label) +
             '</span><span class="dot"></span><span class="tag">' + tag + '</span></button>';
         }).join('') + '</div>';
@@ -271,6 +271,15 @@
       '<div class="field-label">' + esc(f.label) + badge + '</div>' +
       '<span class="field-key">' + esc(f.key) + '</span>';
 
+    if (f.type === 'link') {
+      // edited on its own admin page, not in the studio
+      inspector.innerHTML = '<div class="panel-title">Edit</div>' +
+        '<div class="field-label">' + esc(f.label) + '</div>' +
+        '<div class="group"><div class="hint" style="font-size:13px;color:#ddd">These cards are managed in <b>Content Collections → Services</b>. ' +
+        'Changes you save there show on the page here.</div>' +
+        '<div class="row"><a class="btn gold" style="text-decoration:none" href="' + esc(f.link) + '">Edit services &rarr;</a></div></div>';
+      return;
+    }
     if (f.type === 'gallery') {
       var imgs = String(value).split('\n').filter(Boolean);
       html += '<div class="group"><div class="group-title">Images in the slider (' + imgs.length + ')</div>' +
@@ -483,7 +492,7 @@
       var key = el.getAttribute('data-cms');
       if (!fields[key]) {
         fields[key] = { key: key, label: el.getAttribute('data-cms-label') || key,
-          type: el.getAttribute('data-cms-type') || 'text', els: [] };
+          type: el.getAttribute('data-cms-type') || 'text', link: el.getAttribute('data-cms-link') || '', els: [] };
         order.push(key);
       }
       fields[key].els.push(el);

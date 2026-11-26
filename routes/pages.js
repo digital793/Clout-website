@@ -119,6 +119,10 @@ router.get('/', (req, res) => {
     .filter(work => work.isActive !== false && work.showOnHome)
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   pageData.testimonials = getTestimonials('home');
+  // Services cube, from Content Collections → Services
+  pageData.serviceCube = cmsStore.getCollection('serviceCube')
+    .filter(svc => svc.isActive !== false && svc.name && svc.media)
+    .sort((a, b) => (Number(a.sortOrder) || 0) - (Number(b.sortOrder) || 0));
   renderWithEdits(res, 'index', pageData, 'home');
 });
 

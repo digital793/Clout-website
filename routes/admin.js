@@ -85,7 +85,7 @@ router.get('/dashboard', requireAuth, requirePrivilege('dashboard'), async (req,
   const submissions = await cmsStore.getSubmissions();
   const users = await cmsStore.getUsers();
 
-  const totalServices = cmsStore.getCollection('services').length;
+  const totalServices = cmsStore.getCollection('serviceCube').length;
   const totalWorks = cmsStore.getCollection('works').length;
   const totalBlogs = cmsStore.getCollection('blogs').length;
   const totalTeam = cmsStore.getCollection('team').length;
@@ -172,6 +172,19 @@ const collectionMap = {
   blogs: { title: 'Blogs & Articles', key: 'blogs', priv: 'blogs' },
   team: { title: 'Team Members', key: 'team', priv: 'team' }
 };
+
+// Services = the homepage services cube (the old services list is kept but no longer shown)
+router.get('/collections/services', requireAuth, requirePrivilege('services'), (req, res) => {
+  const items = cmsStore.getCollection('serviceCube')
+    .slice()
+    .sort((a, b) => (Number(a.sortOrder) || 0) - (Number(b.sortOrder) || 0));
+  res.render('admin/services', {
+    title: 'Services Management — Cloutgency CMS',
+    activeTab: 'services',
+    user: req.session.user,
+    items
+  });
+});
 
 // Testimonials (Customer Stories) have their own page with Home / About Us tabs
 router.get('/collections/testimonials', requireAuth, requirePrivilege('testimonials'), (req, res) => {

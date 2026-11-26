@@ -96,36 +96,19 @@
       <div class="svc__pin">
         <h2 class="svc__title" id="svc-heading" data-cms="services.title" data-cms-label="Title">Our Services</h2>
         <div class="svc__body">
-          <div class="svc__stage" aria-hidden="true"><!-- cubes are built here by JS --></div>
+          <div class="svc__stage" aria-hidden="true" data-cms="services.cube" data-cms-type="link" data-cms-link="/admin/collections/services" data-cms-label="Service cards (cube)"><!-- cubes are built here by JS --></div>
         </div>
       </div>
 
       <ol class="svc__src">
-        <li data-media-src="/videos/clout-SEO_mp4.mp4" data-media-poster="/videos/clout-SEO_poster.0000000.jpg" data-media-alt="Branding work">
-          <h3 data-cms="services.s1Title" data-cms-label="Service 1 name">Branding</h3>
-          <p data-cms="services.s1Text" data-cms-label="Service 1 line">Identity built to convert, not just look pretty.</p>
-          <ul data-cms="services.s1List" data-cms-type="list" data-cms-label="Service 1 points"><li>Identity</li><li>Strategy</li><li>Positioning</li><li>Guidelines</li></ul>
+        <%# Comes from the admin: Content Collections → Services %>
+        <% (typeof serviceCube !== 'undefined' ? serviceCube : []).forEach(function (svc) { %>
+        <li data-media-src="<%= svc.media %>" data-media-poster="<%= svc.poster || '' %>" data-media-alt="<%= svc.alt || svc.name %>">
+          <h3><%= svc.name %></h3>
+          <p><%= svc.line %></p>
+          <ul><% (svc.points || []).forEach(function (pt) { %><li><%= pt %></li><% }); %></ul>
         </li>
-        <li data-media-src="/videos/digital-marketing_1_mp4.mp4" data-media-poster="/videos/digital-marketing_1_poster.0000000.jpg" data-media-alt="Digital marketing work">
-          <h3 data-cms="services.s2Title" data-cms-label="Service 2 name">Digital Marketing</h3>
-          <p data-cms="services.s2Text" data-cms-label="Service 2 line">Culture moves fast. We build presence that keeps pace.</p>
-          <ul data-cms="services.s2List" data-cms-type="list" data-cms-label="Service 2 points"><li>Social Media</li><li>Strategy</li><li>Content Calendar</li><li>Community Mgmt</li></ul>
-        </li>
-        <li data-media-src="/videos/digital-marketing_1_mp4.mp4" data-media-poster="/videos/digital-marketing_1_poster.0000000.jpg" data-media-alt="Content creation work">
-          <h3 data-cms="services.s3Title" data-cms-label="Service 3 name">Content Creation</h3>
-          <p data-cms="services.s3Text" data-cms-label="Service 3 line">Scroll speed is brutal. Our content survives it.</p>
-          <ul data-cms="services.s3List" data-cms-type="list" data-cms-label="Service 3 points"><li>Video Production</li><li>Photography</li><li>Motion Graphics</li><li>Copywriting</li></ul>
-        </li>
-        <li data-media-src="/videos/performace-marketing_mp4.mp4" data-media-poster="/videos/performace-marketing_poster.0000000.jpg" data-media-alt="Performance marketing work">
-          <h3 data-cms="services.s4Title" data-cms-label="Service 4 name">Performance Marketing</h3>
-          <p data-cms="services.s4Text" data-cms-label="Service 4 line">Anyone can get clicks. We get customers.</p>
-          <ul data-cms="services.s4List" data-cms-type="list" data-cms-label="Service 4 points"><li>Meta &amp; Google Ads</li><li>Funnel Optimization</li><li>E-Commerce</li><li>AI Automation</li></ul>
-        </li>
-        <li data-media-src="/videos/Web_mp4.mp4" data-media-poster="/videos/Web_poster.0000000.jpg" data-media-alt="Web design work">
-          <h3 data-cms="services.s5Title" data-cms-label="Service 5 name">Web Design</h3>
-          <p data-cms="services.s5Text" data-cms-label="Service 5 line">Your site is judged in 3 seconds. We make them count.</p>
-          <ul data-cms="services.s5List" data-cms-type="list" data-cms-label="Service 5 points"><li>UI/UX</li><li>Development</li><li>CRO</li><li>SEO</li></ul>
-        </li>
+        <% }); %>
       </ol>
     </section>
     <section class="testimonial-section">
