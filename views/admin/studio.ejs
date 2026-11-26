@@ -82,6 +82,15 @@
     .btn.danger { color: var(--red); }
     .btn:disabled { opacity: .4; cursor: not-allowed; }
 
+    .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .g-item { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: #0a0a0d; border: 1px solid var(--border); }
+    .g-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .g-num { position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,.75); color: var(--gold); font-size: 10px; font-weight: 800; border-radius: 4px; padding: 1px 5px; }
+    .g-tools { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; padding: 4px; background: linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,0)); }
+    .g-btn { background: rgba(0,0,0,.7); border: 1px solid rgba(255,255,255,.2); color: #fff; border-radius: 5px; width: 24px; height: 22px; font-size: 11px; cursor: pointer; padding: 0; }
+    .g-btn:hover { border-color: var(--gold); }
+    .g-btn.g-del { color: var(--red); }
+    .g-btn:disabled { opacity: .3; cursor: not-allowed; }
     .toast { position: fixed; right: 20px; bottom: 20px; background: #111; border: 1px solid var(--gold); color: var(--text); padding: 12px 16px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.6); opacity: 0; transform: translateY(10px); transition: all .25s ease; z-index: 10; }
     .toast.show { opacity: 1; transform: none; }
     .toast.error { border-color: var(--red); }
@@ -173,6 +182,9 @@
   function readValue(f) {
     var el = f.els[0];
     if (f.type === 'image') return el.getAttribute('src') || '';
+    if (f.type === 'gallery') return Array.prototype.filter.call(el.querySelectorAll('img'), function (img) {
+      return !img.closest('.splide__slide--clone');
+    }).map(function (img) { return img.getAttribute('src') || ''; }).filter(Boolean).join('\n');
     if (f.type === 'list') return Array.prototype.map.call(el.querySelectorAll('li'), function (li) { return readText(li); }).join('\n');
     return readText(el);
   }
@@ -184,6 +196,7 @@
   // write a value into the preview page
   function paint(key, value) {
     var f = fields[key];
+    if (f.type === 'gallery') return; // the slider is rebuilt by the page after publishing
     f.els.forEach(function (el) {
       if (f.type === 'image') {
         el.removeAttribute('srcset'); el.removeAttribute('sizes'); el.setAttribute('src', value);
@@ -226,7 +239,7 @@
       return '<div class="nav-section"><div class="nav-section-head">' + esc(SECTION_NAMES[sec] || sec) + '</div>' +
         groups[sec].map(function (key) {
           var f = fields[key];
-          var tag = f.type === 'image' ? 'IMG' : f.type === 'list' ? 'LIST' : 'TXT';
+          var tag = f.type === 'image' ? 'IMG' : f.type === 'gallery' ? 'IMGS' : f.type === 'list' ? 'LIST' : 'TXT';
           return '<button type="button" class="nav-item" data-key="' + esc(key) + '"><span>' + esc(f.label) +
             '</span><span class="dot"></span><span class="tag">' + tag + '</span></button>';
         }).join('') + '</div>';
@@ -258,7 +271,25 @@
       '<div class="field-label">' + esc(f.label) + badge + '</div>' +
       '<span class="field-key">' + esc(f.key) + '</span>';
 
-    if (f.type === 'image') {
+    if (f.type === 'gallery') {
+      var imgs = String(value).split('\n').filter(Boolean);
+      html += '<div class="group"><div class="group-title">Images in the slider (' + imgs.length + ')</div>' +
+        '<div class="gallery">' + imgs.map(function (u, i) {
+          return '<div class="g-item"><img src="' + esc(u) + '" alt=""><span class="g-num">' + (i + 1) + '</span>' +
+            '<div class="g-tools">' +
+            '<button type="button" class="g-btn" data-g="up" data-i="' + i + '" title="Move left"' + (i === 0 ? ' disabled' : '') + '>&larr;</button>' +
+            '<button type="button" class="g-btn" data-g="down" data-i="' + i + '" title="Move right"' + (i === imgs.length - 1 ? ' disabled' : '') + '>&rarr;</button>' +
+            '<button type="button" class="g-btn g-del" data-g="del" data-i="' + i + '" title="Remove"' + (imgs.length <= 2 ? ' disabled' : '') + '>&#10005;</button>' +
+            '</div></div>';
+        }).join('') + '</div>' +
+        '<div class="row"><button type="button" class="btn gold" id="uploadBtn">+ Add image</button>' +
+        '<input type="file" id="fileInput" accept="image/*" multiple hidden></div>' +
+        '<div class="group-title" style="margin-top:14px">Or add by link</div>' +
+        '<div class="row" style="margin-top:0"><input class="url-input" id="addUrl" placeholder="/images/photo.webp or https://…" style="flex:1">' +
+        '<button type="button" class="btn" id="addUrlBtn">Add</button></div>' +
+        '<div class="hint">Square images look best. The slider keeps at least 2 images.</div></div>' +
+        '<div class="note">The slider on the preview updates after you click Publish &amp; Save.</div>';
+    } else if (f.type === 'image') {
       html += '<div class="group"><div class="group-title">Image</div>' +
         '<img class="img-preview" id="imgPreview" src="' + esc(value) + '" alt="">' +
         '<div class="row"><button type="button" class="btn gold" id="uploadBtn">Upload new image</button>' +
@@ -283,11 +314,55 @@
       '<div class="hint">"Restore original" brings back the text or image the page was built with, after you publish.</div>';
     inspector.innerHTML = html;
 
-    var input = document.getElementById('valueInput');
-    input.addEventListener('input', function () {
-      setPending(f.key, input.value);
-      if (f.type === 'image') document.getElementById('imgPreview').src = input.value;
-    });
+    if (f.type === 'gallery') {
+      // image list: reorder, remove, add by upload or link
+      var list = String(value).split('\n').filter(Boolean);
+      var commit = function (next) { setPending(f.key, next.join('\n')); renderInspector(f, visible); };
+      inspector.querySelectorAll('[data-g]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var i = Number(b.dataset.i), next = list.slice();
+          if (b.dataset.g === 'up' && i > 0) { next.splice(i - 1, 0, next.splice(i, 1)[0]); }
+          if (b.dataset.g === 'down' && i < next.length - 1) { next.splice(i + 1, 0, next.splice(i, 1)[0]); }
+          if (b.dataset.g === 'del' && next.length > 2) { next.splice(i, 1); }
+          commit(next);
+        });
+      });
+      var gFile = document.getElementById('fileInput');
+      document.getElementById('uploadBtn').addEventListener('click', function () { gFile.click(); });
+      gFile.addEventListener('change', function () {
+        var files = Array.prototype.slice.call(gFile.files);
+        if (!files.length) return;
+        var btn = document.getElementById('uploadBtn');
+        btn.disabled = true; btn.textContent = 'Uploading…';
+        files.reduce(function (p, file) {
+          return p.then(function (urls) {
+            var fd = new FormData(); fd.append('file', file);
+            return fetch('/api/admin/studio-upload', { method: 'POST', body: fd, headers: { Accept: 'application/json' } })
+              .then(function (r) { return r.json(); })
+              .then(function (res) { if (!res.success) throw new Error(res.error || 'Upload failed'); return urls.concat(res.url); });
+          });
+        }, Promise.resolve([]))
+          .then(function (urls) {
+            commit(list.concat(urls));
+            toast(urls.length + ' image' + (urls.length > 1 ? 's' : '') + ' added — click Publish & Save to put them live');
+          })
+          .catch(function (e) { toast(e.message, true); renderInspector(f, visible); });
+      });
+      var addUrl = document.getElementById('addUrl');
+      var addByLink = function () {
+        var u = addUrl.value.trim();
+        if (!/^(\/(?!\/)|https?:\/\/)[^"<>\s]+$/i.test(u)) { toast('Use a site path like /images/photo.webp or an https:// link', true); return; }
+        commit(list.concat(u));
+      };
+      document.getElementById('addUrlBtn').addEventListener('click', addByLink);
+      addUrl.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addByLink(); } });
+    } else {
+      var input = document.getElementById('valueInput');
+      input.addEventListener('input', function () {
+        setPending(f.key, input.value);
+        if (f.type === 'image') document.getElementById('imgPreview').src = input.value;
+      });
+    }
     if (f.type === 'image') {
       var fileInput = document.getElementById('fileInput');
       document.getElementById('uploadBtn').addEventListener('click', function () { fileInput.click(); });

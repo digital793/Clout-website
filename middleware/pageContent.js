@@ -34,6 +34,9 @@ const listToHtml = (text) => String(text).split(/\r?\n/).map(s => s.trim()).filt
 
 // Only allow site-relative image paths or http(s) URLs
 const safeImageUrl = (url) => (/^(\/(?!\/)|https?:\/\/)[^"<>\s]*$/i.test(String(url).trim()) ? String(url).trim() : null);
+// One image URL per line -> slider slides (same markup as the newsletter slider)
+const galleryToHtml = (text) => String(text).split(/\r?\n/).map(safeImageUrl).filter(Boolean)
+  .map(url => `<div class="splide__slide"><img src="${escapeHtml(url)}" loading="lazy" alt="" class="splide__img"></div>`).join('');
 
 function applyEdits(html, edits) {
   const keys = Object.keys(edits);
@@ -76,7 +79,10 @@ function applyEdits(html, edits) {
       }
       if (closeStart === -1) { from = openEnd + 1; continue; }
 
-      const inner = type === 'list' ? listToHtml(edits[key]) : textToHtml(edits[key]);
+      if (type === 'gallery' && !galleryToHtml(edits[key])) { from = openEnd + 1; continue; } // never empty the slider
+      const inner = type === 'list' ? listToHtml(edits[key])
+        : type === 'gallery' ? galleryToHtml(edits[key])
+        : textToHtml(edits[key]);
       html = html.slice(0, openEnd + 1) + inner + html.slice(closeStart);
       from = openEnd + 1;
     }

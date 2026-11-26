@@ -35,7 +35,7 @@ router.post('/studio/:page', requireAuth, requirePrivilege('pages'), async (req,
     const fields = {};
     for (const [key, value] of Object.entries(input)) {
       if (!/^[A-Za-z0-9_]+\.[A-Za-z0-9_]+$/.test(key)) return res.status(400).json({ success: false, error: `Invalid field: ${key}` });
-      if (value !== null && (typeof value !== 'string' || value.length > 5000)) {
+      if (value !== null && (typeof value !== 'string' || value.length > 20000)) {
         return res.status(400).json({ success: false, error: `Invalid value for ${key}` });
       }
       fields[key] = value; // null = back to the original text
