@@ -130,7 +130,10 @@
   'use strict';
   var PAGE = <%- JSON.stringify(page.slug) %>;
   var SAVED = <%- JSON.stringify(edits || {}).replace(/</g, '\\u003c') %>; // published edits
-  var SECTION_NAMES = {
+  var SECTION_NAMES = PAGE === 'about' ? {
+    hero: 'Hero', story: 'Our Story', principles: 'Guiding Principles', team: 'Meet Our Team',
+    stories: 'Customer Stories', cta: 'Ready to Win'
+  } : {
     hero: 'Hero (desktop)', heroMobile: 'Hero (phone)', clients: 'Our Clients', services: 'Our Services',
     stories: 'Customer Stories', work: 'Our Work', cta: 'Ready to Win', newsletter: 'Newsletter'
   };
@@ -270,7 +273,8 @@
     }
     if (!visible) {
       html += '<div class="note">This item isn\'t visible on the preview at this size' +
-        (f.key.indexOf('services.') === 0 ? ' — the services cube builds itself from this text when the page loads. Publish, then the cube shows the new text.' :
+        (PAGE !== 'home' ? '.' :
+         f.key.indexOf('services.') === 0 ? ' — the services cube builds itself from this text when the page loads. Publish, then the cube shows the new text.' :
          f.key.indexOf('heroMobile.') === 0 ? '. Switch to Phone to see it.' : f.key.indexOf('hero.') === 0 ? '. Switch to Desktop to see it.' : '.') + '</div>';
     }
     html += '<div class="row" style="margin-top:18px">' +

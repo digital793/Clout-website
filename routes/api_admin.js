@@ -25,7 +25,7 @@ router.post('/pages/:slug/:section', requireAuth, requirePrivilege('pages'), asy
 
 // ─── Page Studio: publish text/image edits ──────────────────────────────────
 const { studioSlug } = require('../middleware/pageContent');
-const STUDIO_PAGES = ['home'];
+const STUDIO_PAGES = ['home', 'about'];
 
 router.post('/studio/:page', requireAuth, requirePrivilege('pages'), async (req, res) => {
   try {

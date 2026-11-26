@@ -128,7 +128,7 @@ router.get('/pages', requireAuth, requirePrivilege('pages'), (req, res) => {
 });
 
 // Full-screen studio for pages that are ready; others show a placeholder.
-const studioReady = ['home'];
+const studioReady = ['home', 'about'];
 router.get('/pages/:slug', requireAuth, requirePrivilege('pages'), (req, res) => {
   const page = editablePages.find(p => p.slug === req.params.slug);
   if (!page) return res.redirect('/admin/pages');

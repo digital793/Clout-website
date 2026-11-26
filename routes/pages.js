@@ -123,7 +123,7 @@ router.get('/about-us', (req, res) => {
   pageData.team = cmsStore.getCollection('team')
     .filter(member => member.isActive !== false)
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-  res.render('about-us', pageData);
+  renderWithEdits(res, 'about-us', pageData, 'about');
 });
 
 // ─── Services ────────────────────────────────────────────────────────────────
