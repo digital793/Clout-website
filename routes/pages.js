@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const cmsStore = require('../db/cmsStore');
 const workCategories = require('../constants/workCategories');
+const { renderWithEdits } = require('../middleware/pageContent');
 const router = express.Router();
 
 // ─── Shared dynamic page meta builder ────────────────────────────────────────
@@ -109,7 +110,7 @@ router.get('/', (req, res) => {
   pageData.works = cmsStore.getCollection('works')
     .filter(work => work.isActive !== false && work.showOnHome)
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-  res.render('index', pageData);
+  renderWithEdits(res, 'index', pageData, 'home');
 });
 
 // ─── About ───────────────────────────────────────────────────────────────────

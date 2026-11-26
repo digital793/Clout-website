@@ -23,6 +23,45 @@ router.post('/pages/:slug/:section', requireAuth, requirePrivilege('pages'), asy
   }
 });
 
+// ─── Page Studio: publish text/image edits ──────────────────────────────────
+const { studioSlug } = require('../middleware/pageContent');
+const STUDIO_PAGES = ['home'];
+
+router.post('/studio/:page', requireAuth, requirePrivilege('pages'), async (req, res) => {
+  try {
+    const { page } = req.params;
+    if (!STUDIO_PAGES.includes(page)) return res.status(404).json({ success: false, error: 'Unknown page' });
+    const input = (req.body && req.body.fields) || {};
+    const fields = {};
+    for (const [key, value] of Object.entries(input)) {
+      if (!/^[A-Za-z0-9_]+\.[A-Za-z0-9_]+$/.test(key)) return res.status(400).json({ success: false, error: `Invalid field: ${key}` });
+      if (value !== null && (typeof value !== 'string' || value.length > 5000)) {
+        return res.status(400).json({ success: false, error: `Invalid value for ${key}` });
+      }
+      fields[key] = value; // null = back to the original text
+    }
+    if (!Object.keys(fields).length) return res.status(400).json({ success: false, error: 'Nothing to publish' });
+    const saved = await cmsStore.updatePageSection(studioSlug(page), 'fields', fields);
+    res.json({ success: true, message: 'Published', fields: saved });
+  } catch (err) {
+    console.error('Studio publish error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ─── Page Studio: image upload ───────────────────────────────────────────────
+router.post('/studio-upload', requireAuth, requirePrivilege('pages'), (req, res) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) return res.status(400).json({ success: false, error: err.message });
+    if (!req.file) return res.status(400).json({ success: false, error: 'No file uploaded' });
+    if (!/^image\//.test(req.file.mimetype)) {
+      fs.unlink(req.file.path, () => {});
+      return res.status(400).json({ success: false, error: 'Please upload an image file' });
+    }
+    res.json({ success: true, url: `/images/uploads/${req.file.filename}` });
+  });
+});
+
 // ─── Update Global SEO ───────────────────────────────────────────────────────
 router.post('/seo/global', requireAuth, requirePrivilege('seo'), async (req, res) => {
   try {

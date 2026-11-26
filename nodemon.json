@@ -1,0 +1,3 @@
+{
+  "ignore": ["data/*", "public/*", "views/*", "node_modules/*", "*.html"]
+}

@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const cmsStore = require('../db/cmsStore');
 const { requireAuth, requirePrivilege } = require('../middleware/auth');
 const workCategories = require('../constants/workCategories');
+const { getEdits } = require('../middleware/pageContent');
 const router = express.Router();
 
 // ─── Login & Session ─────────────────────────────────────────────────────────
@@ -126,10 +127,20 @@ router.get('/pages', requireAuth, requirePrivilege('pages'), (req, res) => {
   });
 });
 
-// Studio is built in the next step; until then show a placeholder inside the admin.
+// Full-screen studio for pages that are ready; others show a placeholder.
+const studioReady = ['home'];
 router.get('/pages/:slug', requireAuth, requirePrivilege('pages'), (req, res) => {
   const page = editablePages.find(p => p.slug === req.params.slug);
   if (!page) return res.redirect('/admin/pages');
+  if (studioReady.includes(page.slug)) {
+    return res.render('admin/studio', {
+      title: `${page.name} Studio — Cloutgency CMS`,
+      user: req.session.user,
+      page,
+      pages: editablePages,
+      edits: getEdits(page.slug)
+    });
+  }
   res.render('admin/pages', {
     title: `${page.name} Studio — Cloutgency CMS`,
     activeTab: 'pages',
