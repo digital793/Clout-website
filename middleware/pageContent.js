@@ -9,14 +9,31 @@ const cmsStore = require('../db/cmsStore');
 
 const studioSlug = (page) => `studio-${page}`;
 
+// Sections shared by several pages are saved once (in "studio-shared") and apply everywhere.
+// Ready to Win ("cta.*") is on Home, About Us and Our Works.
+const SHARED_SLUG = 'studio-shared';
+const isSharedKey = (key) => key.startsWith('cta.');
+
+function readFields(slug) {
+  return (cmsStore.getPageContent(slug) || {}).fields || {};
+}
+
 function getEdits(page) {
-  const fields = (cmsStore.getPageContent(studioSlug(page)) || {}).fields || {};
   const edits = {};
-  for (const [key, value] of Object.entries(fields)) {
-    if (value !== null && value !== undefined) edits[key] = value;
+  for (const [key, value] of Object.entries(readFields(studioSlug(page)))) {
+    if (!isSharedKey(key) && value !== null && value !== undefined) edits[key] = value;
+  }
+  for (const [key, value] of Object.entries(readFields(SHARED_SLUG))) {
+    if (isSharedKey(key) && value !== null && value !== undefined) edits[key] = value;
   }
   return edits;
 }
+
+// Only allow site paths, https links, or mailto/tel for button links
+const safeHref = (url) => {
+  const u = String(url).trim();
+  return /^(\/(?!\/)[^"<>\s]*|https?:\/\/[^"<>\s]+|mailto:[^"<>\s]+|tel:[+0-9() -]+|#[\w-]*)$/i.test(u) ? u : null;
+};
 
 function escapeHtml(text) {
   return String(text)
@@ -55,15 +72,20 @@ function applyEdits(html, edits) {
       const type = (openTag.match(/data-cms-type="([^"]+)"/) || [])[1] || 'text';
       if (type === 'link') { from = openEnd + 1; continue; } // edited elsewhere in the admin, never here
 
-      if (type === 'image') {
-        const url = safeImageUrl(edits[key]);
+      if (type === 'image' || type === 'href' || type === 'bg') {
+        // these only change an attribute on the tag itself
         let newTag = openTag;
-        if (url) {
-          newTag = openTag
-            .replace(/\s(srcset|sizes)="[^"]*"/g, '')
-            .replace(/\ssrc="[^"]*"/, ` src="${escapeHtml(url)}"`);
-          html = html.slice(0, tagStart) + newTag + html.slice(openEnd + 1);
+        if (type === 'image') {
+          const url = safeImageUrl(edits[key]);
+          if (url) newTag = openTag.replace(/\s(srcset|sizes)="[^"]*"/g, '').replace(/\ssrc="[^"]*"/, ` src="${escapeHtml(url)}"`);
+        } else if (type === 'href') {
+          const url = safeHref(edits[key]);
+          if (url) newTag = openTag.replace(/\shref="[^"]*"/, ` href="${escapeHtml(url)}"`);
+        } else {
+          const url = safeImageUrl(edits[key]);
+          if (url) newTag = openTag.replace(/\sstyle="[^"]*"/, ` style="background-image:url('${escapeHtml(url).replace(/'/g, '%27')}')"`);
         }
+        if (newTag !== openTag) html = html.slice(0, tagStart) + newTag + html.slice(openEnd + 1);
         from = tagStart + newTag.length; // continue after this tag
         continue;
       }
@@ -109,4 +131,4 @@ function renderWithEdits(res, view, data, page) {
   });
 }
 
-module.exports = { studioSlug, getEdits, applyEdits, renderWithEdits };
+module.exports = { studioSlug, SHARED_SLUG, isSharedKey, readFields, safeHref, getEdits, applyEdits, renderWithEdits };

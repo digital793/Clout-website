@@ -182,6 +182,8 @@
   function readValue(f) {
     var el = f.els[0];
     if (f.type === 'image') return el.getAttribute('src') || '';
+    if (f.type === 'href') return el.getAttribute('href') || '';
+    if (f.type === 'bg') { var m = /url\(["']?([^"')]+)["']?\)/.exec(el.getAttribute('style') || ''); return m ? m[1] : ''; }
     if (f.type === 'gallery') return Array.prototype.filter.call(el.querySelectorAll('img'), function (img) {
       return !img.closest('.splide__slide--clone');
     }).map(function (img) { return img.getAttribute('src') || ''; }).filter(Boolean).join('\n');
@@ -198,7 +200,11 @@
     var f = fields[key];
     if (f.type === 'gallery') return; // the slider is rebuilt by the page after publishing
     f.els.forEach(function (el) {
-      if (f.type === 'image') {
+      if (f.type === 'href') {
+        el.setAttribute('href', value);
+      } else if (f.type === 'bg') {
+        el.style.backgroundImage = "url('" + String(value).replace(/'/g, '%27') + "')";
+      } else if (f.type === 'image') {
         el.removeAttribute('srcset'); el.removeAttribute('sizes'); el.setAttribute('src', value);
       } else if (f.type === 'list') {
         el.innerHTML = String(value).split('\n').map(function (s) { return s.trim(); }).filter(Boolean)
@@ -239,7 +245,7 @@
       return '<div class="nav-section"><div class="nav-section-head">' + esc(SECTION_NAMES[sec] || sec) + '</div>' +
         groups[sec].map(function (key) {
           var f = fields[key];
-          var tag = f.type === 'image' ? 'IMG' : f.type === 'gallery' ? 'IMGS' : f.type === 'list' ? 'LIST' : f.type === 'link' ? 'LINK' : 'TXT';
+          var tag = f.type === 'image' || f.type === 'bg' ? 'IMG' : f.type === 'gallery' ? 'IMGS' : f.type === 'list' ? 'LIST' : f.type === 'link' ? 'LINK' : f.type === 'href' ? 'URL' : 'TXT';
           return '<button type="button" class="nav-item" data-key="' + esc(key) + '"><span>' + esc(f.label) +
             '</span><span class="dot"></span><span class="tag">' + tag + '</span></button>';
         }).join('') + '</div>';
@@ -269,7 +275,8 @@
     var value = currentValue(f.key);
     var html = '<div class="panel-title">Edit</div>' +
       '<div class="field-label">' + esc(f.label) + badge + '</div>' +
-      '<span class="field-key">' + esc(f.key) + '</span>';
+      '<span class="field-key">' + esc(f.key) + '</span>' +
+      (f.key.indexOf('cta.') === 0 ? '<div class="hint" style="margin-top:8px">Ready to Win is shared: changes here also apply to Home, About Us and Our Works, and to <a href="/admin/ready-to-win" style="color:var(--gold)">Content Collections → Ready to Win</a>.</div>' : '');
 
     if (f.type === 'link') {
       // edited on its own admin page, not in the studio
@@ -298,7 +305,11 @@
         '<button type="button" class="btn" id="addUrlBtn">Add</button></div>' +
         '<div class="hint">Square images look best. The slider keeps at least 2 images.</div></div>' +
         '<div class="note">The slider on the preview updates after you click Publish &amp; Save.</div>';
-    } else if (f.type === 'image') {
+    } else if (f.type === 'href') {
+      html += '<div class="group"><div class="group-title">Link</div>' +
+        '<input class="url-input" id="valueInput" value="' + esc(value) + '">' +
+        '<div class="hint">A site page like /contact-us, a full https:// link, or mailto: / tel:.</div></div>';
+    } else if (f.type === 'image' || f.type === 'bg') {
       html += '<div class="group"><div class="group-title">Image</div>' +
         '<img class="img-preview" id="imgPreview" src="' + esc(value) + '" alt="">' +
         '<div class="row"><button type="button" class="btn gold" id="uploadBtn">Upload new image</button>' +
@@ -369,10 +380,10 @@
       var input = document.getElementById('valueInput');
       input.addEventListener('input', function () {
         setPending(f.key, input.value);
-        if (f.type === 'image') document.getElementById('imgPreview').src = input.value;
+        if (f.type === 'image' || f.type === 'bg') document.getElementById('imgPreview').src = input.value;
       });
     }
-    if (f.type === 'image') {
+    if (f.type === 'image' || f.type === 'bg') {
       var fileInput = document.getElementById('fileInput');
       document.getElementById('uploadBtn').addEventListener('click', function () { fileInput.click(); });
       fileInput.addEventListener('change', function () { if (fileInput.files[0]) uploadImage(f, fileInput.files[0]); });

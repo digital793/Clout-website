@@ -24,7 +24,7 @@ router.post('/pages/:slug/:section', requireAuth, requirePrivilege('pages'), asy
 });
 
 // ─── Page Studio: publish text/image edits ──────────────────────────────────
-const { studioSlug } = require('../middleware/pageContent');
+const { studioSlug, SHARED_SLUG, isSharedKey, readFields, safeHref } = require('../middleware/pageContent');
 const STUDIO_PAGES = ['home', 'about'];
 
 router.post('/studio/:page', requireAuth, requirePrivilege('pages'), async (req, res) => {
@@ -41,10 +41,45 @@ router.post('/studio/:page', requireAuth, requirePrivilege('pages'), async (req,
       fields[key] = value; // null = back to the original text
     }
     if (!Object.keys(fields).length) return res.status(400).json({ success: false, error: 'Nothing to publish' });
-    const saved = await cmsStore.updatePageSection(studioSlug(page), 'fields', fields);
+    // shared sections (Ready to Win) are saved once for every page
+    const pageFields = {}, sharedFields = {};
+    for (const [key, value] of Object.entries(fields)) (isSharedKey(key) ? sharedFields : pageFields)[key] = value;
+    const saved = {};
+    if (Object.keys(pageFields).length) Object.assign(saved, await cmsStore.updatePageSection(studioSlug(page), 'fields', pageFields));
+    if (Object.keys(sharedFields).length) Object.assign(saved, await cmsStore.updatePageSection(SHARED_SLUG, 'fields', sharedFields));
     res.json({ success: true, message: 'Published', fields: saved });
   } catch (err) {
     console.error('Studio publish error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ─── Ready to Win (shared by Home, About Us, Our Works) ──────────────────────
+const readyToWinDefaults = require('../constants/readyToWin');
+router.post('/ready-to-win', requireAuth, requirePrivilege('pages'), async (req, res) => {
+  try {
+    const input = (req.body && req.body.fields) || {};
+    const fields = {};
+    for (const [key, original] of Object.entries(readyToWinDefaults)) {
+      if (!Object.prototype.hasOwnProperty.call(input, key)) continue;
+      const value = input[key] === null ? null : String(input[key]).trim();
+      if (value === null || value === '' || value === original) { fields[key] = null; continue; } // back to the built-in value
+      if ((key === 'cta.heading' || key === 'cta.button') && value.length > 200) {
+        return res.status(400).json({ success: false, error: 'Keep the heading and button text under 200 characters.' });
+      }
+      if (key === 'cta.link' && !safeHref(value)) {
+        return res.status(400).json({ success: false, error: 'Button link must be a site page like /contact-us, an https:// link, or mailto:/tel:.' });
+      }
+      if ((key === 'cta.image' || key.startsWith('cta.card')) && !/^(\/(?!\/)|https?:\/\/)[^"<>\s]+$/i.test(value)) {
+        return res.status(400).json({ success: false, error: 'Images must be a site path like /images/photo.webp or an https:// link.' });
+      }
+      fields[key] = value;
+    }
+    if (!Object.keys(fields).length) return res.status(400).json({ success: false, error: 'Nothing to save' });
+    const saved = await cmsStore.updatePageSection(SHARED_SLUG, 'fields', fields);
+    res.json({ success: true, message: 'Saved', fields: saved });
+  } catch (err) {
+    console.error('Ready to Win save error:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

@@ -161,7 +161,7 @@ router.get('/our-works', (req, res) => {
     .filter(work => work.isActive !== false)
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   pageData.workCategories = workCategories;
-  res.render('our-works', pageData);
+  renderWithEdits(res, 'our-works', pageData, 'works'); // applies the shared Ready to Win edits
 });
 
 // ─── Blog ────────────────────────────────────────────────────────────────────

@@ -5,7 +5,8 @@ const bcrypt = require('bcryptjs');
 const cmsStore = require('../db/cmsStore');
 const { requireAuth, requirePrivilege } = require('../middleware/auth');
 const workCategories = require('../constants/workCategories');
-const { getEdits } = require('../middleware/pageContent');
+const { getEdits, readFields, SHARED_SLUG } = require('../middleware/pageContent');
+const readyToWinDefaults = require('../constants/readyToWin');
 const router = express.Router();
 
 // ─── Login & Session ─────────────────────────────────────────────────────────
@@ -183,6 +184,22 @@ router.get('/collections/services', requireAuth, requirePrivilege('services'), (
     activeTab: 'services',
     user: req.session.user,
     items
+  });
+});
+
+// Ready to Win — one shared section on Home, About Us and Our Works
+router.get('/ready-to-win', requireAuth, requirePrivilege('pages'), (req, res) => {
+  const saved = readFields(SHARED_SLUG);
+  const values = {};
+  for (const [key, original] of Object.entries(readyToWinDefaults)) {
+    values[key] = saved[key] !== null && saved[key] !== undefined ? saved[key] : original;
+  }
+  res.render('admin/ready-to-win', {
+    title: 'Ready to Win — Cloutgency CMS',
+    activeTab: 'ready_to_win',
+    user: req.session.user,
+    values,
+    defaults: readyToWinDefaults
   });
 });
 

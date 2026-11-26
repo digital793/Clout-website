@@ -1,0 +1,155 @@
+<%- include('layout', {
+  body: `
+  <style>
+    .r-head { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
+    .r-head h2 { font-size:22px; font-weight:800; color:#fff; }
+    .r-head p { font-size:12px; color:var(--text-muted); margin-top:2px; max-width:640px; line-height:1.5; }
+    .r-actions { display:flex; gap:10px; }
+    .r-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+    @media (max-width:1024px) { .r-grid { grid-template-columns:1fr; } }
+    .r-section-title { font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
+    .r-img-box { display:flex; gap:14px; align-items:flex-start; }
+    .r-thumb { width:120px; height:120px; flex-shrink:0; border-radius:10px; background:#0a090e center/contain no-repeat; border:1px solid var(--border-subtle); }
+    .r-thumb.wide { width:200px; height:100px; border-radius:24px; background-size:cover; }
+    .r-img-fields { flex:1; min-width:0; }
+    .r-cards { display:grid; grid-template-columns:1fr; gap:14px; }
+    .r-card-row { display:flex; gap:14px; align-items:center; padding:12px; border:1px solid var(--border-subtle); border-radius:12px; background:rgba(255,255,255,.02); }
+    .r-card-label { font-size:12px; font-weight:800; color:#fff; margin-bottom:6px; }
+    .r-small-btn { background:rgba(255,255,255,.05); border:1px solid var(--border-subtle); color:#fff; border-radius:999px; padding:7px 14px; font-weight:700; font-size:12px; cursor:pointer; margin-top:8px; }
+    .r-small-btn:disabled { opacity:.5; }
+    .r-hint { font-size:11.5px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
+    .r-changed { color:var(--gold); font-size:10px; font-weight:800; margin-left:6px; }
+    .r-secondary { background:rgba(255,255,255,.05); border:1px solid var(--border-subtle); color:#fff; border-radius:999px; padding:9px 16px; font-weight:700; font-size:13px; cursor:pointer; }
+  </style>
+
+  <div class="r-head">
+    <div>
+      <h2>Ready to Win</h2>
+      <p>The "Ready to Win the Internet?" section on Home, About Us and Our Works. One change here updates all three pages. The same items can also be edited in Pages Editor.</p>
+    </div>
+    <div class="r-actions">
+      <button type="button" class="r-secondary" id="btnReset">Restore originals</button>
+      <button type="button" class="btn-action-gold" id="btnSave">Save changes ✦</button>
+    </div>
+  </div>
+
+  <div class="r-grid">
+    <div class="glass-panel">
+      <div class="r-section-title">Text &amp; button</div>
+      <div class="form-group">
+        <label class="form-label">Heading <span class="r-changed" data-flag="cta.heading"></span></label>
+        <input type="text" class="form-control" data-key="cta.heading" maxlength="200">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Button text <span class="r-changed" data-flag="cta.button"></span></label>
+        <input type="text" class="form-control" data-key="cta.button" maxlength="200">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Button link <span class="r-changed" data-flag="cta.link"></span></label>
+        <input type="text" class="form-control" data-key="cta.link" placeholder="/contact-us">
+        <div class="r-hint">A site page like /contact-us, a full https:// link, or mailto: / tel:.</div>
+      </div>
+
+      <div class="r-section-title" style="margin-top:22px;">Animated image</div>
+      <div class="r-img-box">
+        <div class="r-thumb" data-thumb="cta.image"></div>
+        <div class="r-img-fields">
+          <input type="text" class="form-control" data-key="cta.image" data-img="1">
+          <button type="button" class="r-small-btn" data-upload="cta.image">Upload image</button>
+          <span class="r-changed" data-flag="cta.image"></span>
+          <div class="r-hint">The astronaut by default. GIF, PNG, WebP or JPG.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-panel">
+      <div class="r-section-title">Scrolling brand cards</div>
+      <div class="r-cards">
+        ${[1, 2, 3, 4, 5].map(n => `
+        <div class="r-card-row">
+          <div class="r-thumb wide" data-thumb="cta.card${n}"></div>
+          <div class="r-img-fields">
+            <div class="r-card-label">Brand card ${n} <span class="r-changed" data-flag="cta.card${n}"></span></div>
+            <input type="text" class="form-control" data-key="cta.card${n}" data-img="1">
+            <button type="button" class="r-small-btn" data-upload="cta.card${n}">Upload image</button>
+          </div>
+        </div>`).join('')}
+      </div>
+      <div class="r-hint" style="margin-top:12px;">Wide banners (about 2:1) fit best — the cards show the whole image.</div>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept="image/*" hidden>
+
+  <script>
+  (function () {
+    var VALUES = ${JSON.stringify(values).replace(/</g, '\\u003c')};
+    var DEFAULTS = ${JSON.stringify(defaults).replace(/</g, '\\u003c')};
+    var inputs = Array.prototype.slice.call(document.querySelectorAll('[data-key]'));
+    var fileInput = document.getElementById('fileInput');
+    var uploadKey = null;
+
+    function cssUrl(u) { return "url('" + String(u).replace(/'/g, '%27') + "')"; }
+    function refresh(input) {
+      var key = input.dataset.key;
+      var thumb = document.querySelector('[data-thumb="' + key + '"]');
+      if (thumb) thumb.style.backgroundImage = input.value.trim() ? cssUrl(input.value.trim()) : 'none';
+      var flag = document.querySelector('[data-flag="' + key + '"]');
+      if (flag) flag.textContent = input.value.trim() !== DEFAULTS[key] ? 'CHANGED' : '';
+    }
+    inputs.forEach(function (input) {
+      input.value = VALUES[input.dataset.key] || '';
+      refresh(input);
+      input.addEventListener('input', function () { refresh(input); });
+    });
+
+    document.querySelectorAll('[data-upload]').forEach(function (btn) {
+      btn.addEventListener('click', function () { uploadKey = btn.dataset.upload; fileInput.click(); });
+    });
+    fileInput.addEventListener('change', function () {
+      var file = fileInput.files[0]; fileInput.value = '';
+      if (!file || !uploadKey) return;
+      var btn = document.querySelector('[data-upload="' + uploadKey + '"]');
+      var input = document.querySelector('[data-key="' + uploadKey + '"]');
+      btn.disabled = true; btn.textContent = 'Uploading…';
+      var fd = new FormData(); fd.append('file', file);
+      fetch('/api/admin/studio-upload', { method: 'POST', body: fd, headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (!res.success) throw new Error(res.error || 'Upload failed');
+          input.value = res.url; refresh(input);
+          showToast('Image uploaded — click Save changes to put it live');
+        })
+        .catch(function (err) { showToast(err.message, true); })
+        .finally(function () { btn.disabled = false; btn.textContent = 'Upload image'; });
+    });
+
+    function save(fields, msg) {
+      var btn = document.getElementById('btnSave');
+      btn.disabled = true; btn.textContent = 'Saving…';
+      fetch('/api/admin/ready-to-win', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ fields: fields })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (!res.success) throw new Error(res.error || 'Save failed');
+          showToast(msg);
+          setTimeout(function () { location.reload(); }, 600);
+        })
+        .catch(function (err) { showToast(err.message, true); btn.disabled = false; btn.textContent = 'Save changes ✦'; });
+    }
+
+    document.getElementById('btnSave').addEventListener('click', function () {
+      var fields = {};
+      inputs.forEach(function (i) { fields[i.dataset.key] = i.value.trim(); });
+      save(fields, 'Saved — Home, About Us and Our Works are updated');
+    });
+    document.getElementById('btnReset').addEventListener('click', function () {
+      if (!confirm('Put every Ready to Win item back to how the site was built? This applies to all three pages.')) return;
+      var fields = {};
+      Object.keys(DEFAULTS).forEach(function (k) { fields[k] = null; });
+      save(fields, 'Restored the original Ready to Win section');
+    });
+  })();
+  </script>
+`}) %>
