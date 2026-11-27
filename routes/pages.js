@@ -339,11 +339,7 @@ router.get('/our-work', (req, res) => res.redirect(301, '/our-works'));
 
 // ─── 401 ─────────────────────────────────────────────────────────────────────
 router.get('/401', (req, res) => {
-  res.status(401).render('401', {
-    title: '401 — Unauthorized | Cloutgency',
-    currentPath: '/401',
-    meta: meta({ description: 'Access unauthorized.', canonical: `${siteUrl}/401` }),
-  });
+  res.status(401).render('401', getPageMeta('/401', '401 — Unauthorized | Cloutgency', 'Access unauthorized.'));
 });
 
 module.exports = router;
